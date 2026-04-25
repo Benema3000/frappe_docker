@@ -10,7 +10,6 @@
         "grapecity.gc-excelviewer",
         "mtxr.sqltools",
         "mtxr.sqltools-driver-mysql",
-        "visualstudioexptteam.vscodeintellicode"
       ],
       "settings": {
         "terminal.integrated.profiles.linux": {
