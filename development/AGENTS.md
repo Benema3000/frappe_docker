@@ -31,6 +31,9 @@ This is a Frappe v16 bench. Custom apps with their own `AGENTS.md`:
 | [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership substrate (Member, Membership, Donation, Donor, …) | (standalone) | Dev branch in use: `miki-dev`. B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
 | [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector` | CRMMember Dataverse rebuild |
 | [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Theming / seeding / dashboard layer for Ilanga fundraising | `non_profit` | No custom doctypes — drives non_profit doctypes |
+| [`buzz`](frappe-bench/apps/buzz/AGENTS.md) | Upstream events / ticketing / sponsorships SPA. Provides `Buzz Event`, `Event Booking`, `Event Ticket`, etc. | (standalone) | Upstream — never patch directly; extend via `extend_doctype_class` from event_app |
+| [`event_app`](frappe-bench/apps/event_app/AGENTS.md) | kibesuisse course / event registration extension — workflows, multilingual correspondence, payment integration, trainer settlement | `buzz`, `miki_app`, `builder`, `payrexx_integration` | Extends Buzz Event + Event Booking via mixins; never edits buzz directly |
+| [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
 > `mopi_app` are two **different** apps in this bench. The user often says
@@ -51,7 +54,37 @@ good_connector  (standalone)
 non_profit      (standalone)
     ├── ilanga_app    (required_apps = ["non_profit"])
     └── miki_app      (required_apps = ["non_profit", "good_connector"])
+
+buzz            (standalone — upstream)
+payments        (standalone — upstream; never patch)
+    └── payrexx_integration  (required_apps = ["payments"])
+
+event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integration"])
 ```
+
+### Cross-cutting patterns to be aware of
+
+- **Workflow dual-write** (`event_app` Event Booking + Buzz Event): the
+  Frappe `Workflow` is installed and `workflow_state` is *derived* from
+  legacy free-text status fields on each save (`services/workflow.py`).
+  Never strip the legacy fields — buzz's internal logic still reads them.
+  Adding a new state means updating `STATES`, `TRANSITIONS`, and
+  `derive_workflow_state` in lockstep.
+- **Correspondence framework** (`event_app/services/correspondence.py`):
+  every outbound email goes through one dispatcher with a flow key. Auto
+  triggers honour an auto-toggle (`Event App Email Settings`) plus per-event
+  override (`Buzz Event.disabled_email_flows`). Manual sends pass
+  `manual=True` to bypass the gate. Templates are de/fr/it `Email Template`
+  fixtures named `event_app_<flow>_<lang>` — never overwritten on re-install.
+- **Payrexx pay-by-email** (`payrexx_integration.api.payrexx_pay_url`):
+  HMAC-signed redirect URL keyed off the site's `encryption_key`. The
+  Payrexx `Gateway` is created lazily on click via the `pay_invoice`
+  endpoint, not eagerly when the email is composed.
+- **ERPNext Dunning** is wired via *Dunning Letter Text* (per-language body
+  on Dunning Type), NOT via `Email Template`. event_app provides
+  localised template bodies and a helper
+  (`event_app.services.dunning_setup.apply_event_app_dunning_to_all`)
+  that copies them into Dunning Type rows.
 
 ### Portal payload gotcha
 
