@@ -17,6 +17,21 @@ This is the bench-level overview. Per-app specifics live in each app's own
 - **Never modify core apps directly:** `apps/frappe`, `apps/erpnext`,
   `apps/payments`, `apps/builder`. The `apps/Commit` app is also off-limits.
 
+## Custom App Documentation
+
+- Every custom app must keep both root-level docs:
+  - `HOW_TO.md` for operator/admin workflows and common procedures.
+  - `DOCUMENTATION.md` for technical architecture, doctypes, hooks, APIs,
+    operational contracts, and tests.
+- When changing behavior in a custom app, update the relevant doc in the same
+  change. New workflows, doctypes, public APIs, scheduled jobs, email flows,
+  migrations, setup steps, or test commands should not land without docs.
+- Keep `README.md` short and install/status focused. Keep `AGENTS.md` focused
+  on coding-agent rules and gotchas; link to `HOW_TO.md` and
+  `DOCUMENTATION.md` for user-facing and technical reference material.
+- Do not add these docs to upstream/off-limits apps (`frappe`, `erpnext`,
+  `payments`, `builder`, `buzz`, `Commit`) unless explicitly asked.
+
 ---
 
 ## What's in this bench
@@ -126,6 +141,34 @@ event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integr
   - open-task fallback via assigned Barakah tasks
   Never return early just because a portal user has no `Portal User ->
   Supplier` rows, or the fallback path stops working.
+- For Barakah task visibility, reminder delivery, and file fallbacks, reuse
+  `good_connector.portal_helpers.portal_email_can_access_task()` rather than
+  re-implementing `_assign` / `ToDo` / `Portal User` checks locally. When
+  those paths drift apart, the hub, reminders, and file pages disagree about
+  who should see the same task.
+- Barakah task targets are explicit Task links, not reactive joins. If
+  `Barakah Country.country_office` changes, open Aqeeqa / Well tasks must be
+  retargeted to the current Supplier and reassigned to that Supplier's portal
+  users. Cancelled `ToDo` rows must not count as portal visibility.
+- Portal task status `Overdue` is intentionally **non-terminal**. It must stay
+  visible in `GetProcessList` and `GetData` must return the open/editable
+  task payload with `gc_taskcomplete: False`. Only `Completed`, `Cancelled`,
+  and `Closed` are terminal hub task statuses.
+- MoPi is the exception that may include completed assignment history in
+  `GetProcessList`. Keep non-terminal/editable rows sorted first, and do not
+  use completed history rows for `StoreFiles` or other edit actions.
+- Portal file uploads are marked with `File.attached_to_field =
+  "portal_upload"`. `DeleteFiles` must only delete those portal-created files;
+  generated/customer-facing attachments such as invoices, dunnings, Barakah
+  order files, or certificates are read-only from the hub.
+- App-scoped endpoints must enforce app context for task and file actions.
+  A task/file visible through one app's endpoint should not become mutable via
+  another app's endpoint just because the same portal email is assigned.
+- Swiss output formatting is driven by Frappe's runtime defaults, not just the
+  `System Settings` Single row. If `format_date()` / `fmt_money()` still show
+  the old pattern after changing `System Settings.date_format` or
+  `number_format`, also update `frappe.db.set_default(...)`, commit if you're
+  in a standalone script, and clear cache before trusting the result.
 - Hosted Barakah file debugging has two separate layers too:
   - Frappe / `good_connector` can be healthy (`GetFileList` lists files and
     direct `GetFileUrls` returns the attachment bytes)
@@ -150,6 +193,14 @@ event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integr
   - `_setup_fresh_declaration()` = cleanup + fresh reseed for later hub tests
   Reusing the fresh helper too early will delete the declaration that invoice /
   dunning / QR-bill checks still rely on.
+- On this dev site, `bench --site development16.localhost run-tests --app
+  non_profit` can pass the app tests and then exit non-zero while ERPNext
+  lazily bootstraps unrelated test records. The observed cause was
+  `Selling Settings.cust_master_name = "Naming Series"` leaving `_Test
+  Customer` stored under a numeric Customer docname while ERPNext's own test
+  bootstrap expects a link named `_Test Customer`. Do not rename Customer rows
+  casually; treat this as a local ERPNext test-data/bootstrap issue, not a
+  non_profit regression.
 
 ---
 
