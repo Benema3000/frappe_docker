@@ -136,6 +136,14 @@ event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integr
 - Do **not** run multiple `bench run-tests` commands against the same site in
   parallel. `barakah_app.setup.ensure_setup()` reloads DocTypes during
   `before_tests`, and parallel runs deadlock on `tabDocType` / `tabSeries`.
+- If an SSO-created Desk user can open an app but list views fail with
+  `Insufficient Permission for List Filter`, check the user's `User.user_type`
+  and the app role's `Role.desk_access`. Frappe grants the automatic
+  `Desk User` role only to `System User` accounts, and standard list views read
+  the `List Filter` DocType through `Desk User`. App setup should keep
+  app-specific Desk roles enabled with `desk_access = 1` and repair existing
+  users with those roles from `Website User` to `System User`; do not grant
+  broad `Desk User` DocPerm rows on app doctypes to hide the issue.
 - Barakah portal file visibility has two layers:
   - supplier-linked generated files (`supplier` + `generated_file`)
   - open-task fallback via assigned Barakah tasks
