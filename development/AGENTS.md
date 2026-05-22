@@ -32,6 +32,15 @@ This is the bench-level overview. Per-app specifics live in each app's own
 - Do not add these docs to upstream/off-limits apps (`frappe`, `erpnext`,
   `payments`, `builder`, `buzz`, `Commit`) unless explicitly asked.
 
+## Desk Support Links
+
+- Custom apps must not expose Frappe's upstream support links
+  (`https://support.frappe.io/help` or `https://frappe.io/support`) in Desk.
+  Keep support/help surfaces Goodvantage-owned or app-local. Do not patch
+  `apps/frappe` directly; use custom-app setup/hooks, such as
+  `good_connector.desk_branding.remove_frappe_support_links()` and its Desk JS
+  include, to suppress upstream support items upgrade-safely.
+
 ---
 
 ## What's in this bench
