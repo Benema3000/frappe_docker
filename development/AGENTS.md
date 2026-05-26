@@ -45,18 +45,22 @@ This is the bench-level overview. Per-app specifics live in each app's own
 
 ## What's in this bench
 
-This is a Frappe v16 bench. Custom apps with their own `AGENTS.md`:
+This is a Frappe v16 bench. Custom apps and extension apps tracked by this
+guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
+`HOW_TO.md` and `DOCUMENTATION.md`.
 
 | App | Domain | Depends on | Notes |
 |---|---|---|---|
 | [`good_connector`](frappe-bench/apps/good_connector/AGENTS.md) | Shared portal connector — JWT auth, task management, webhook API endpoints, email templating, permission helpers | (standalone) | Shared substrate for `mopi_app` and `barakah_app` |
-| [`mopi_app`](frappe-bench/apps/mopi_app/AGENTS.md) | Training modules, certificates, task campaigns, employee groups | `good_connector` | Innermost dir is `mopiapp/` (mismatch — `frappe.scrub("MoPiApp")`) |
-| [`barakah_app`](frappe-bench/apps/barakah_app/AGENTS.md) | Aqeeqa / Well charity order workflows, daily reminders | `good_connector` | |
+| [`good_help`](frappe-bench/apps/good_help/AGENTS.md) | Embedded Desk help center backed by Frappe Wiki | `wiki` | Syncs `fixtures/help/<app>/` Markdown into Wiki Documents |
+| [`mopi_app`](frappe-bench/apps/mopi_app/AGENTS.md) | Training modules, certificates, task campaigns, employee groups | `erpnext`, `good_connector`, `good_help` | Innermost dir is `mopiapp/` (mismatch — `frappe.scrub("MoPiApp")`) |
+| [`barakah_app`](frappe-bench/apps/barakah_app/AGENTS.md) | Aqeeqa / Well charity order workflows, daily reminders | `erpnext`, `good_connector`, `good_help` | |
 | [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership substrate (Member, Membership, Donation, Donor, …) | (standalone) | Dev branch in use: `miki-dev`. B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
-| [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector` | CRMMember Dataverse rebuild |
+| [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector`, `good_help` | CRMMember Dataverse rebuild |
 | [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Theming / seeding / dashboard layer for Ilanga fundraising | `non_profit` | No custom doctypes — drives non_profit doctypes |
+| [`workflow_visualizer`](frappe-bench/apps/workflow_visualizer/DOCUMENTATION.md) | Opt-in Desk process rail for standard Frappe Workflows | (standalone) | Branch in use: `version-16`; no app-local `AGENTS.md` yet — use `HOW_TO.md` / `DOCUMENTATION.md` |
 | [`buzz`](frappe-bench/apps/buzz/AGENTS.md) | Upstream events / ticketing / sponsorships SPA. Provides `Buzz Event`, `Event Booking`, `Event Ticket`, etc. | (standalone) | Upstream — never patch directly; extend via `extend_doctype_class` from event_app |
-| [`event_app`](frappe-bench/apps/event_app/AGENTS.md) | kibesuisse course / event registration extension — workflows, multilingual correspondence, payment integration, trainer settlement | `buzz`, `miki_app`, `builder`, `payrexx_integration` | Extends Buzz Event + Event Booking via mixins; never edits buzz directly |
+| [`event_app`](frappe-bench/apps/event_app/AGENTS.md) | kibesuisse course / event registration extension — workflows, multilingual correspondence, payment integration, trainer settlement | `buzz`, `miki_app`, `builder`, `payrexx_integration`, `good_connector`, `good_help` | Extends Buzz Event + Event Booking via mixins; never edits buzz directly |
 | [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
@@ -72,18 +76,22 @@ This is a Frappe v16 bench. Custom apps with their own `AGENTS.md`:
 
 ```
 good_connector  (standalone)
-    ├── mopi_app      (required_apps = ["good_connector"])
-    └── barakah_app   (required_apps = ["good_connector"])
+    ├── mopi_app      (required_apps = ["erpnext", "good_connector", "good_help"])
+    └── barakah_app   (required_apps = ["erpnext", "good_connector", "good_help"])
+
+good_help       (required_apps = ["wiki"])
+
+workflow_visualizer  (standalone optional Desk Workflow UI)
 
 non_profit      (standalone)
     ├── ilanga_app    (required_apps = ["non_profit"])
-    └── miki_app      (required_apps = ["non_profit", "good_connector"])
+    └── miki_app      (required_apps = ["non_profit", "good_connector", "good_help"])
 
 buzz            (standalone — upstream)
 payments        (standalone — upstream; never patch)
     └── payrexx_integration  (required_apps = ["payments"])
 
-event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integration"])
+event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integration", "good_connector", "good_help"])
 ```
 
 ### Cross-cutting patterns to be aware of
@@ -94,6 +102,13 @@ event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integr
   Never strip the legacy fields — buzz's internal logic still reads them.
   Adding a new state means updating `STATES`, `TRANSITIONS`, and
   `derive_workflow_state` in lockstep.
+- **Workflow visualizer** (`workflow_visualizer`): optional Desk enhancement
+  that renders an opt-in process rail for standard Frappe Workflows. It must
+  remain permission-preserving: data APIs check document read access and the
+  client still applies transitions through Frappe's standard workflow action
+  path. Owning apps can add display-only transition side-effect notes through
+  `workflow_visualizer_transition_notes`; keep actual side effects in the
+  owning app's normal workflow/document hooks.
 - **Correspondence framework** (`event_app/services/correspondence.py`):
   every outbound email goes through one dispatcher with a flow key. Auto
   triggers honour an auto-toggle (`Event App Email Settings`) plus per-event
@@ -561,7 +576,8 @@ Tests use `FrappeTestCase` from `frappe.tests.utils`. In-test jobs run
 synchronously (`frappe.flags.in_test` is truthy).
 
 - Run `bench migrate` after DocType schema changes.
-- **Install order matters**: `good_connector` before `mopi_app` / `barakah_app`;
+- **Install order matters**: `wiki` before `good_help`; `good_help` before
+  apps with help fixtures; `good_connector` before `mopi_app` / `barakah_app`;
   `non_profit` before `miki_app` / `ilanga_app`. ERPNext is required for
   `mopi_app`, `barakah_app`, `miki_app` (they add custom fields to `Task`).
 
@@ -631,6 +647,14 @@ Common overrides in these apps:
 - Use `frappe.call` with promise-based handling.
 - Use Frappe global helpers in desk scripts: `cstr()`, `cint()`, `flt()`,
   `is_null()`, `format_currency()`.
+- Keep Desk actions mobile-safe. Form and workflow operations belong in
+  Frappe's Actions dropdown via `frm.page.add_action_item(...)`, not
+  `frm.add_custom_button(...)`, because inner-toolbar buttons overflow on
+  mobile. List actions should use `listview.page.add_action_item(...)` for
+  always-available actions or `listview.page.add_actions_menu_item(...)` for
+  checked-row bulk actions. Custom app pages should expose at most one primary
+  top-bar CTA; put additional operational actions in `page.add_action_item(...)`
+  and utility actions such as refresh in `page.add_menu_item(...)`.
 - Preserve existing UI patterns unless the task explicitly requires redesign.
 - Use `frappe.set_route("page-name", param)` for navigation; read params with
   `frappe.get_route()`.
