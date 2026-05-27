@@ -9,7 +9,7 @@
         "ms-vscode.live-server",
         "grapecity.gc-excelviewer",
         "mtxr.sqltools",
-        "mtxr.sqltools-driver-mysql",
+        "mtxr.sqltools-driver-mysql"
       ],
       "settings": {
         "terminal.integrated.profiles.linux": {

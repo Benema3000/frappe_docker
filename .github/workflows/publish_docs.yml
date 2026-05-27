@@ -56,5 +56,6 @@ jobs:
           path: docs/.vitepress/dist
 
       - name: Deploy to GitHub Pages
+        if: github.repository == 'frappe/frappe_docker'
         id: deployment
         uses: actions/deploy-pages@v5

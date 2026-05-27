@@ -4,6 +4,7 @@ repos:
     hooks:
       - id: check-executables-have-shebangs
       - id: check-shebang-scripts-are-executable
+        exclude: ^\.opencode/skills/
       - id: trailing-whitespace
       - id: end-of-file-fixer
 
@@ -11,23 +12,26 @@ repos:
     rev: v3.19.1
     hooks:
       - id: pyupgrade
+        exclude: ^\.opencode/skills/
         args: [--py37-plus]
 
   - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
       - id: black
+        exclude: ^\.opencode/skills/
 
   - repo: https://github.com/pycqa/isort
     rev: 6.0.1
     hooks:
       - id: isort
+        exclude: ^\.opencode/skills/
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
-        exclude: ^docs/pnpm-lock\.yaml$
+        exclude: ^(docs/pnpm-lock\.yaml|\.opencode/skills/)
         additional_dependencies:
           - prettier@3.5.2
 
@@ -35,10 +39,10 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell
-        exclude: ^docs/pnpm-lock\.yaml$
+        exclude: ^(docs/pnpm-lock\.yaml|\.opencode/skills/frappe-claude-skill-package/)
         args:
           - -L
-          - "ro"
+          - "ro,deklaration"
 
   - repo: local
     hooks:
