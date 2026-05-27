@@ -6,6 +6,26 @@ This is the bench-level overview. Per-app specifics live in each app's own
 
 ---
 
+## Agent Skills
+
+- Project opencode skills live at `/workspace/.opencode/skills/` so agents
+  launched anywhere in this workspace can discover them.
+- Codex-visible symlinks live at `/home/frappe/.codex/skills/`.
+- Claude-visible symlinks live at `/home/frappe/.claude/skills/`.
+- Use `/workspace/.opencode/skills/frappe-bench/SKILL.md` for this bench's
+  local app map, off-limits apps, commands, and Goodvantage-specific gotchas.
+- Use `/workspace/.opencode/skills/frappe-dev/SKILL.md` for general Frappe
+  app-development workflows and focused references.
+- Additional downloaded Frappe skills from
+  `Impertio-Studio/Frappe_Claude_Skill_Package` live under
+  `/workspace/.opencode/skills/frappe-claude-skill-package/skills/source/`.
+- Use `/workspace/.opencode/skills/frappe-taste/SKILL.md` for Frappe coding
+  taste guidance from `frappe/bench-cli/taste.md`.
+- Keep durable Frappe agent guidance in this root `AGENTS.md` and app-local
+  `AGENTS.md` files; keep reusable triggerable workflow guidance in the skill.
+
+---
+
 ## Core Working Style
 
 - Prefer direct implementation over extended planning.
@@ -15,7 +35,8 @@ This is the bench-level overview. Per-app specifics live in each app's own
 - Keep changes minimal, upgrade-safe, and aligned with existing Frappe
   patterns.
 - **Never modify core apps directly:** `apps/frappe`, `apps/erpnext`,
-  `apps/payments`, `apps/builder`. The `apps/Commit` app is also off-limits.
+  `apps/payments`, `apps/builder`, `apps/buzz`. The `apps/Commit` app is also
+  off-limits.
 
 ## Custom App Documentation
 
@@ -56,11 +77,13 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`mopi_app`](frappe-bench/apps/mopi_app/AGENTS.md) | Training modules, certificates, task campaigns, employee groups | `erpnext`, `good_connector`, `good_help` | Innermost dir is `mopiapp/` (mismatch — `frappe.scrub("MoPiApp")`) |
 | [`barakah_app`](frappe-bench/apps/barakah_app/AGENTS.md) | Aqeeqa / Well charity order workflows, daily reminders | `erpnext`, `good_connector`, `good_help` | |
 | [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership substrate (Member, Membership, Donation, Donor, …) | (standalone) | Dev branch in use: `miki-dev`. B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
+| [`good_npo`](frappe-bench/apps/good_npo/AGENTS.md) | Generic Goodvantage NPO Desk / public presentation layer | `non_profit`, `good_connector`, `payrexx_integration`, `good_help` | Keep reusable; no Ilanga, Miki, or demo-only assumptions |
+| [`good_demo`](frappe-bench/apps/good_demo/AGENTS.md) | Public demo shell — signup, temporary users, reset/seed routines | `good_npo`, `good_connector`, `good_help` | Reset only data marked as demo seed/demo user |
 | [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector`, `good_help` | CRMMember Dataverse rebuild |
 | [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Theming / seeding / dashboard layer for Ilanga fundraising | `non_profit` | No custom doctypes — drives non_profit doctypes |
 | [`workflow_visualizer`](frappe-bench/apps/workflow_visualizer/DOCUMENTATION.md) | Opt-in Desk process rail for standard Frappe Workflows | (standalone) | Branch in use: `version-16`; no app-local `AGENTS.md` yet — use `HOW_TO.md` / `DOCUMENTATION.md` |
 | [`buzz`](frappe-bench/apps/buzz/AGENTS.md) | Upstream events / ticketing / sponsorships SPA. Provides `Buzz Event`, `Event Booking`, `Event Ticket`, etc. | (standalone) | Upstream — never patch directly; extend via `extend_doctype_class` from event_app |
-| [`event_app`](frappe-bench/apps/event_app/AGENTS.md) | kibesuisse course / event registration extension — workflows, multilingual correspondence, payment integration, trainer settlement | `buzz`, `miki_app`, `builder`, `payrexx_integration`, `good_connector`, `good_help` | Extends Buzz Event + Event Booking via mixins; never edits buzz directly |
+| [`event_app`](frappe-bench/apps/event_app/AGENTS.md) | Native kibesuisse course / event registration stack — public catalogue, bookings, correspondence, payment integration, trainer settlement | `miki_app`, `payrexx_integration`, `good_connector`, `good_help` | No Buzz/Builder runtime dependency |
 | [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
@@ -84,22 +107,27 @@ good_help       (required_apps = ["wiki"])
 workflow_visualizer  (standalone optional Desk Workflow UI)
 
 non_profit      (standalone)
+    ├── good_npo      (required_apps = ["non_profit", "good_connector", "payrexx_integration", "good_help"])
     ├── ilanga_app    (required_apps = ["non_profit"])
     └── miki_app      (required_apps = ["non_profit", "good_connector", "good_help"])
+
+good_npo
+    └── good_demo     (required_apps = ["good_npo", "good_connector", "good_help"])
 
 buzz            (standalone — upstream)
 payments        (standalone — upstream; never patch)
     └── payrexx_integration  (required_apps = ["payments"])
 
-event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integration", "good_connector", "good_help"])
+event_app       (required_apps = ["miki_app", "payrexx_integration", "good_connector", "good_help"])
 ```
 
 ### Cross-cutting patterns to be aware of
 
-- **Workflow dual-write** (`event_app` Event Booking + Buzz Event): the
-  Frappe `Workflow` is installed and `workflow_state` is *derived* from
+- **Workflow state sync** (`event_app` Event Booking + Event App Event): the
+  Frappe `Workflow` is installed and `workflow_state` stays synchronized with
   legacy free-text status fields on each save (`services/workflow.py`).
-  Never strip the legacy fields — buzz's internal logic still reads them.
+  Never strip those legacy fields — reporting and compatibility code still
+  reads them.
   Adding a new state means updating `STATES`, `TRANSITIONS`, and
   `derive_workflow_state` in lockstep.
 - **Workflow visualizer** (`workflow_visualizer`): optional Desk enhancement
@@ -112,7 +140,7 @@ event_app       (required_apps = ["buzz", "miki_app", "builder", "payrexx_integr
 - **Correspondence framework** (`event_app/services/correspondence.py`):
   every outbound email goes through one dispatcher with a flow key. Auto
   triggers honour an auto-toggle (`Event App Email Settings`) plus per-event
-  override (`Buzz Event.disabled_email_flows`). Manual sends pass
+  override (`Event App Event.disabled_email_flows`). Manual sends pass
   `manual=True` to bypass the gate. Templates are de/fr/it `Email Template`
   fixtures named `event_app_<flow>_<lang>` — never overwritten on re-install.
 - **Payrexx pay-by-email** (`payrexx_integration.api.payrexx_pay_url`):
@@ -572,8 +600,10 @@ bench --site <site> run-tests --module <app>.tests.<test_module>
 bench --site <site> run-tests --module <app>.tests.<test_module> --test <Class>.<method>
 ```
 
-Tests use `FrappeTestCase` from `frappe.tests.utils`. In-test jobs run
-synchronously (`frappe.flags.in_test` is truthy).
+Prefer `IntegrationTestCase` from `frappe.tests` for DB-backed tests and
+`UnitTestCase` for pure logic; existing `FrappeTestCase` suites can remain as
+they are unless being touched. In-test jobs run synchronously
+(`frappe.flags.in_test` is truthy).
 
 - Run `bench migrate` after DocType schema changes.
 - **Install order matters**: `wiki` before `good_help`; `good_help` before

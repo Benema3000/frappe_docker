@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Logs
+*.log
+
+# Local development
+.env
+.env.local
+PROMPTS.md
+.claude/
+*.code-workspace
+
+# Node (if any JS tooling)
+node_modules/
+
+# Distribution (Python packages, NOT .skill files)
+dist/
+build/
+*.egg-info/
+
+# NOTE: .skill files are NOT ignored - they are our deliverables!
+# If you need to ignore local/draft skills, put them in a drafts/ folder
+SKILLS_LOG.md
