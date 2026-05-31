@@ -83,7 +83,7 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Theming / seeding / dashboard layer for Ilanga fundraising | `non_profit` | No custom doctypes — drives non_profit doctypes |
 | [`workflow_visualizer`](frappe-bench/apps/workflow_visualizer/DOCUMENTATION.md) | Opt-in Desk process rail for standard Frappe Workflows | (standalone) | Branch in use: `version-16`; no app-local `AGENTS.md` yet — use `HOW_TO.md` / `DOCUMENTATION.md` |
 | [`buzz`](frappe-bench/apps/buzz/AGENTS.md) | Upstream events / ticketing / sponsorships SPA. Provides `Buzz Event`, `Event Booking`, `Event Ticket`, etc. | (standalone) | Upstream — never patch directly; extend via `extend_doctype_class` from event_app |
-| [`event_app`](frappe-bench/apps/event_app/AGENTS.md) | Native kibesuisse course / event registration stack — public catalogue, bookings, correspondence, payment integration, trainer settlement | `miki_app`, `payrexx_integration`, `good_connector`, `good_help` | No Buzz/Builder runtime dependency |
+| [`event_app`](frappe-bench/apps/event_app/AGENTS.md) | Independent event/course registration platform — public catalogue, bookings, correspondence, payment integration, trainer settlement | `payrexx_integration`, `good_connector`, `good_help` | Hook-based architecture for customization; kibesuisse integrations optional via hooks |
 | [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
@@ -118,7 +118,7 @@ buzz            (standalone — upstream)
 payments        (standalone — upstream; never patch)
     └── payrexx_integration  (required_apps = ["payments"])
 
-event_app       (required_apps = ["miki_app", "payrexx_integration", "good_connector", "good_help"])
+event_app       (required_apps = ["payrexx_integration", "good_connector", "good_help"])
 ```
 
 ### Cross-cutting patterns to be aware of
@@ -130,6 +130,20 @@ event_app       (required_apps = ["miki_app", "payrexx_integration", "good_conne
   reads them.
   Adding a new state means updating `STATES`, `TRANSITIONS`, and
   `derive_workflow_state` in lockstep.
+- **event_app independence and hooks** (`event_app`): fully independent from
+  miki_app as of May 2026. All kibesuisse-specific integrations are now
+  optional and provided via hooks. The app ships with generic default
+  implementations for:
+  - `event_app_salutation_provider` — contact salutation generation
+  - `event_app_invoice_email_provider` — invoice email rendering
+  - `event_app_invoice_pdf_provider` — invoice PDF generation
+  - `event_app_dunning_defaults_provider` — dunning document defaults
+  - `event_app_dunning_pdf_provider` — dunning PDF generation
+  - `event_app_role_profile_provider` — role profile setup
+  - `event_app_seed_data_provider` — seed data loading
+  For kibesuisse deployments, configure these hooks in `hooks.py` to point
+  to miki_app implementations. Without hooks, event_app uses ERPNext-standard
+  defaults. See `INDEPENDENCE_SUMMARY.md` for architecture details.
 - **Workflow visualizer** (`workflow_visualizer`): optional Desk enhancement
   that renders an opt-in process rail for standard Frappe Workflows. It must
   remain permission-preserving: data APIs check document read access and the
