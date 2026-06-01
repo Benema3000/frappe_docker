@@ -82,14 +82,14 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector`, `good_help` | CRMMember Dataverse rebuild |
 | [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Theming / seeding / dashboard layer for Ilanga fundraising | `non_profit` | No custom doctypes — drives non_profit doctypes |
 | [`workflow_visualizer`](frappe-bench/apps/workflow_visualizer/DOCUMENTATION.md) | Opt-in Desk process rail for standard Frappe Workflows | (standalone) | Branch in use: `version-16`; no app-local `AGENTS.md` yet — use `HOW_TO.md` / `DOCUMENTATION.md` |
-| [`buzz`](frappe-bench/apps/buzz/AGENTS.md) | Upstream events / ticketing / sponsorships SPA. Provides `Buzz Event`, `Event Booking`, `Event Ticket`, etc. | (standalone) | Upstream — never patch directly; extend via `extend_doctype_class` from event_app |
-| [`event_app`](frappe-bench/apps/event_app/AGENTS.md) | Independent event/course registration platform — public catalogue, bookings, correspondence, payment integration, trainer settlement | `payrexx_integration`, `good_connector`, `good_help` | Hook-based architecture for customization; kibesuisse integrations optional via hooks |
+| [`buzz`](frappe-bench/apps/buzz/AGENTS.md) | Upstream events / ticketing / sponsorships SPA. Provides `Buzz Event`, `Event Booking`, `Event Ticket`, etc. | (standalone) | Upstream — never patch directly |
+| [`good_event`](frappe-bench/apps/good_event/AGENTS.md) | Independent event/course registration platform — public catalogue, bookings, correspondence, payment integration, trainer settlement | `payrexx_integration`, `good_connector`, `good_help` | Renamed from `event_app`; hook-based architecture for customization; kibesuisse integrations optional via hooks |
 | [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
 > `mopi_app` are two **different** apps in this bench. The user often says
 > "mopi_app" when their request actually concerns miki_app. Anything mentioning
-> `Declaration`, `Declaration Campaign`, `Qualikita`, `Miki Category`,
+> `MiKi Declaration`, `MiKi Declaration Campaign`, `Qualikita`, `MiKi Category`,
 > kibesuisse, KITA / SEB / TFO, Personnel A–K, or "member solution" → **miki_app**.
 > Anything mentioning training modules, training certificates, task campaigns,
 > or employee groups → **mopi_app**. Both apps document this routing in their
@@ -118,31 +118,32 @@ buzz            (standalone — upstream)
 payments        (standalone — upstream; never patch)
     └── payrexx_integration  (required_apps = ["payments"])
 
-event_app       (required_apps = ["payrexx_integration", "good_connector", "good_help"])
+good_event      (required_apps = ["payrexx_integration", "good_connector", "good_help"])
 ```
 
 ### Cross-cutting patterns to be aware of
 
-- **Workflow state sync** (`event_app` Event Booking + Event App Event): the
+- **Workflow state sync** (`good_event` Good Event Booking + Good Event): the
   Frappe `Workflow` is installed and `workflow_state` stays synchronized with
   legacy free-text status fields on each save (`services/workflow.py`).
   Never strip those legacy fields — reporting and compatibility code still
   reads them.
   Adding a new state means updating `STATES`, `TRANSITIONS`, and
   `derive_workflow_state` in lockstep.
-- **event_app independence and hooks** (`event_app`): fully independent from
+- **good_event independence and hooks** (`good_event`): fully independent from
   miki_app as of May 2026. All kibesuisse-specific integrations are now
   optional and provided via hooks. The app ships with generic default
   implementations for:
-  - `event_app_salutation_provider` — contact salutation generation
-  - `event_app_invoice_email_provider` — invoice email rendering
-  - `event_app_invoice_pdf_provider` — invoice PDF generation
-  - `event_app_dunning_defaults_provider` — dunning document defaults
-  - `event_app_dunning_pdf_provider` — dunning PDF generation
-  - `event_app_role_profile_provider` — role profile setup
-  - `event_app_seed_data_provider` — seed data loading
+  - `good_event_salutation_provider` — contact salutation generation
+  - `good_event_invoice_email_provider` — invoice email rendering
+  - `good_event_invoice_pdf_provider` — invoice PDF generation
+  - `good_event_invoice_html_provider` — invoice HTML rendering
+  - `good_event_dunning_defaults_provider` — dunning document defaults
+  - `good_event_dunning_pdf_provider` — dunning PDF generation
+  - `good_event_role_profile_provider` — role profile setup
+  - `good_event_seed_data_provider` — seed data loading
   For kibesuisse deployments, configure these hooks in `hooks.py` to point
-  to miki_app implementations. Without hooks, event_app uses ERPNext-standard
+  to miki_app implementations. Without hooks, good_event uses ERPNext-standard
   defaults. See `INDEPENDENCE_SUMMARY.md` for architecture details.
 - **Workflow visualizer** (`workflow_visualizer`): optional Desk enhancement
   that renders an opt-in process rail for standard Frappe Workflows. It must
@@ -151,20 +152,20 @@ event_app       (required_apps = ["payrexx_integration", "good_connector", "good
   path. Owning apps can add display-only transition side-effect notes through
   `workflow_visualizer_transition_notes`; keep actual side effects in the
   owning app's normal workflow/document hooks.
-- **Correspondence framework** (`event_app/services/correspondence.py`):
+- **Correspondence framework** (`good_event/services/correspondence.py`):
   every outbound email goes through one dispatcher with a flow key. Auto
-  triggers honour an auto-toggle (`Event App Email Settings`) plus per-event
-  override (`Event App Event.disabled_email_flows`). Manual sends pass
+  triggers honour an auto-toggle (`Good Event Email Settings`) plus per-event
+  override (`Good Event.disabled_email_flows`). Manual sends pass
   `manual=True` to bypass the gate. Templates are de/fr/it `Email Template`
-  fixtures named `event_app_<flow>_<lang>` — never overwritten on re-install.
+  fixtures named `good_event_<flow>_<lang>` — never overwritten on re-install.
 - **Payrexx pay-by-email** (`payrexx_integration.api.payrexx_pay_url`):
   HMAC-signed redirect URL keyed off the site's `encryption_key`. The
   Payrexx `Gateway` is created lazily on click via the `pay_invoice`
   endpoint, not eagerly when the email is composed.
 - **ERPNext Dunning** is wired via *Dunning Letter Text* (per-language body
-  on Dunning Type), NOT via `Email Template`. event_app provides
+  on Dunning Type), NOT via `Email Template`. good_event provides
   localised template bodies and a helper
-  (`event_app.services.dunning_setup.apply_event_app_dunning_to_all`)
+  (`good_event.services.dunning_setup.apply_good_event_dunning_to_all`)
   that copies them into Dunning Type rows.
 
 ### Portal payload gotcha
@@ -179,7 +180,7 @@ event_app       (required_apps = ["payrexx_integration", "good_connector", "good
 - In the legacy Miki shape, a truthy `completeness_confirmed` inside `data`
   is the fallback signal for "this StoreData is the final submit".
 - Miki portal final submit also creates operations-queue `ToDo`s via
-  `Declaration.sync_master_data()`. In production that can trigger assignment
+  `MiKiDeclaration.sync_master_data()`. In production that can trigger assignment
   notification emails during `after_commit`, so the portal final-submit path
   must mute request-local emails or the declaration can sync successfully in
   DB while the HTTP response still fails with an SMTP error.
@@ -282,15 +283,32 @@ event_app       (required_apps = ["payrexx_integration", "good_connector", "good
 
 Frappe apps use a three-level package layout: `app_name/app_name/innermost_dir/`.
 The innermost name is `frappe.scrub(<module name from modules.txt>)` and
-determines DB table prefixes. **Never rename the innermost dir or change
-`modules.txt`** — it breaks `bench migrate`.
+determines DocType file paths. **Do not rename the innermost dir or change
+`modules.txt` during ordinary feature work** — it needs an explicit app/module
+rename migration and a site install-registry update.
+
+DocType names themselves are effectively site-global. The module name does not
+namespace a DocType string: Frappe stores data in `tab<DocType>` tables and all
+Link/Table `options` point at the plain DocType name. Avoid generic custom
+DocTypes like `Declaration`, `Training Module`, or `Event Booking` in
+product-specific apps. Prefix product-specific DocTypes with the app/product
+name, and keep only truly shared substrate DocTypes generic.
+
+Current audit outcomes:
+
+| App | Use these product-scoped DocType names |
+|---|---|
+| `good_event` | `Good Event`, `Good Event Booking`, `Good Event Master`, `Good Event Coupon`, etc. |
+| `miki_app` | `MiKi Declaration`, `MiKi Declaration Campaign`, `MiKi Category`, `MiKi Settings`, etc. |
+| `mopi_app` | `MoPi Training Module`, `MoPi Training Type`, `MoPi Task Campaign`, `MoPi Employee Group`, etc. |
+| `good_connector` | `Good Connector Available Language` for the settings child table |
 
 The mismatched ones in this bench:
 
 | App | Package dir | Innermost dir | Module name |
 |---|---|---|---|
 | `mopi_app` | `mopi_app/mopi_app/` | `mopiapp/` | `MoPiApp` |
-| `miki_app` | `miki_app/miki_app/` | `miki_app/` | `Miki App` |
+| `miki_app` | `miki_app/miki_app/` | `miki_app/` | `MiKi App` |
 | `non_profit` | `non_profit/non_profit/` | `non_profit/` | `Non Profit` |
 | `ilanga_app` | `ilanga_app/ilanga_app/` | `ilanga_app/` | `Ilanga App` |
 
