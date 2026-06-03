@@ -323,6 +323,14 @@ DocType paths under the inner dir use `mopi_app/mopiapp/doctype/`.
 
 - Prefer DocType configuration, Custom Fields, Property Setters, Client
   Scripts, and exported customizations before writing custom code.
+- For standard DocType field layout changes, use a DocType-level `field_order`
+  Property Setter. Field-level `insert_after` can be insufficient when Frappe's
+  meta sort is driven by `field_order`.
+- For standard DocField property changes such as `hidden`, `read_only`,
+  `in_list_view`, defaults, or quick-entry visibility, use Property Setters.
+  Do not mutate `tabDocField` directly just to mirror the desired metadata.
+- Use client scripts for Desk UX behavior only. Do not move DocFields around in
+  the DOM when Frappe metadata can express the layout.
 - Business logic belongs server-side; client validation is UX only.
 - Reuse existing Frappe utilities, standard DocTypes, and framework patterns
   before creating new abstractions.
@@ -507,6 +515,13 @@ issue (`frappe-missing-type-hints-in-whitelisted-function`).
   count.**
 - Sub-items under a `Section Break` must set `"child": 1`, otherwise they
   render as top-level entries.
+- If a custom Desk route helper restores/selects a sidebar for a DocType route,
+  it must first check whether the current app sidebar already contains that
+  DocType and leave the user there. Shared doctypes such as `Member`,
+  `Membership`, `Donation`, `Good News`, `Task`, `User`, `Sales Invoice`, or
+  `Dunning` can appear in multiple custom app sidebars; clicking one from
+  `miki_app`, `ilanga_app`, `barakah_app`, `mopi_app`, etc. must not switch
+  the user into another app just because that DocType is also exposed there.
 
 ### When resyncing a `Workspace Sidebar` from code
 
