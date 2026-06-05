@@ -44,6 +44,7 @@
   "workspaceFolder": "/workspace/development",
   "shutdownAction": "stopCompose",
   "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/frappe/.ssh,type=bind,consistency=cached"
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/frappe/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.config/opencode,target=/home/frappe/.config/opencode,type=bind,consistency=cached"
   ]
 }

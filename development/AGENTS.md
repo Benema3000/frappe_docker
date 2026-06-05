@@ -417,7 +417,11 @@ Use built-in helpers from `frappe.utils.data`: `cint`, `cstr`, `flt`,
 - Every custom DocType and child table must have a real Python controller
   class. Missing or commented-out controllers can cause orphan deletion
   during `bench migrate`.
-- Add or update tests for new functionality and regressions.
+- Add or update tests for larger code changes, new functionality, behavioral
+  regressions, or risky shared logic. For small code edits, metadata tweaks,
+  docs, spreadsheets, or generated artifacts, use the smallest relevant
+  verification and do not mention skipped bench tests unless there is a
+  concrete reason the user would expect them.
 
 ### Custom Fields
 
@@ -636,6 +640,12 @@ Default dev site: `development16.localhost`. Default credentials:
 
 ### Tests
 
+Run bench tests when a change meaningfully touches app code, schema,
+permissions, workflows, scheduled jobs, portals, reports, or other behavior
+with real regression risk. For docs, spreadsheets, generated workbooks, and
+small non-behavioral edits, verify the artifact directly instead of running or
+reporting skipped bench tests.
+
 ```bash
 # All tests for an app
 bench --site <site> run-tests --app <app_name>
@@ -755,4 +765,5 @@ Common overrides in these apps:
 - Keep business logic out of thin controllers when a service/helper layer
   improves clarity, but avoid abstraction without need.
 - Write readable, predictable, maintainable code.
-- Add or update tests for new functionality and regressions.
+- Add or update tests for larger code changes, new functionality, behavioral
+  regressions, or risky shared logic.
