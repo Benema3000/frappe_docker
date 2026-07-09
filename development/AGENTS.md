@@ -79,12 +79,13 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership substrate (Member, Membership, Donation, Donor, …) | (standalone) | Dev branch in use: `miki-dev`. B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
 | [`good_npo`](frappe-bench/apps/good_npo/AGENTS.md) | Generic Goodvantage NPO Desk / public presentation layer | `non_profit`, `good_connector`, `payrexx_integration`, `good_help` | Keep reusable; no Ilanga, Miki, or demo-only assumptions |
 | [`good_demo`](frappe-bench/apps/good_demo/AGENTS.md) | Public demo shell — signup, temporary users, reset/seed routines | `good_npo`, `good_connector`, `good_help` | Reset only data marked as demo seed/demo user |
-| [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector`, `good_help` | CRMMember Dataverse rebuild |
-| [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Theming / seeding / dashboard layer for Ilanga fundraising | `non_profit` | No custom doctypes — drives non_profit doctypes |
-| [`workflow_visualizer`](frappe-bench/apps/workflow_visualizer/DOCUMENTATION.md) | Opt-in Desk process rail for standard Frappe Workflows | (standalone) | Branch in use: `version-16`; no app-local `AGENTS.md` yet — use `HOW_TO.md` / `DOCUMENTATION.md` |
+| [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector`, `good_help`, `payrexx_integration` | CRMMember Dataverse rebuild |
+| [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Theming / seeding / dashboard layer for Ilanga fundraising | `non_profit` | Proof-of-concept only — out of scope for remediation/refactors; no custom doctypes |
+| [`workflow_visualizer`](frappe-bench/apps/workflow_visualizer/AGENTS.md) | Opt-in Desk process rail for standard Frappe Workflows | (standalone) | Branch in use: `version-16` |
 | [`buzz`](frappe-bench/apps/buzz/AGENTS.md) | Upstream events / ticketing / sponsorships SPA. Provides `Buzz Event`, `Event Booking`, `Event Ticket`, etc. | (standalone) | Upstream — never patch directly |
 | [`good_event`](frappe-bench/apps/good_event/AGENTS.md) | Independent event/course registration platform — public catalogue, bookings, correspondence, payment integration, trainer settlement | `payrexx_integration`, `good_connector`, `good_help` | Renamed from `event_app`; hook-based architecture for customization; kibesuisse integrations optional via hooks |
 | [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
+| [`good_newsletter`](frappe-bench/apps/good_newsletter/AGENTS.md) | Newsletter campaigning (Mailchimp-lite) — campaigns to Email Groups via AWS SES, RFC 8058 unsubscribe, SNS bounce/complaint suppression, delivery stats | `good_connector`, `good_help` | Own per-recipient Email Queue builder (core bulk path can't do per-recipient headers/merge); MJML content via `mjml-python`; GrapesJS designer planned (v0.4) |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
 > `mopi_app` are two **different** apps in this bench. The user often says
@@ -109,7 +110,7 @@ workflow_visualizer  (standalone optional Desk Workflow UI)
 non_profit      (standalone)
     ├── good_npo      (required_apps = ["non_profit", "good_connector", "payrexx_integration", "good_help"])
     ├── ilanga_app    (required_apps = ["non_profit"])
-    └── miki_app      (required_apps = ["non_profit", "good_connector", "good_help"])
+    └── miki_app      (required_apps = ["non_profit", "good_connector", "good_help", "payrexx_integration"])
 
 good_npo
     └── good_demo     (required_apps = ["good_npo", "good_connector", "good_help"])
@@ -119,6 +120,8 @@ payments        (standalone — upstream; never patch)
     └── payrexx_integration  (required_apps = ["payments"])
 
 good_event      (required_apps = ["payrexx_integration", "good_connector", "good_help"])
+
+good_newsletter (required_apps = ["good_connector", "good_help"])
 ```
 
 ### Cross-cutting patterns to be aware of
@@ -452,8 +455,11 @@ against them.
   (`developer_mode=0`) is unaffected; dev installs/uninstalls need to be
   clean. Each app ships a `before_uninstall` hook that clears
   `Workspace Sidebar.app` for its rows before Frappe's cascade runs, which
-  skips the file-delete branch (see `setup.py::before_uninstall` in
-  `mopi_app`, `barakah_app`, `ilanga_app`, `miki_app`).
+  skips the file-delete branch. The canonical helper is
+  `good_connector.install_utils.clear_workspace_sidebar_app`; every
+  sidebar-shipping app registers the hook (`mopi_app`, `barakah_app`,
+  `ilanga_app`, `miki_app`, `good_event`, `good_connector`, `good_npo`,
+  `good_demo`, `good_help`).
 - **Never let a Link field inherit the site's default silently in a shipped
   fixture.** Example: Number Card has a `currency` Link. If you insert a
   Count card without specifying `currency`, Frappe fills it from the
