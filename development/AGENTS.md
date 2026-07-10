@@ -353,8 +353,9 @@ ID alone. For every non-child, non-single DocType staff work with:
 - DocTypes autonamed by their title field (`field:title`, `field:code`) need
   none of this — the ID search already is the title search.
 
-Applied to good_event and miki_app (2026-07-10). Other apps carry their open
-per-DocType suggestions in their own `AGENTS.md`.
+Applied across all custom apps (2026-07-10); each app's `AGENTS.md`
+"List-View Search" section records its per-DocType choices, including the
+DocTypes that deliberately need nothing.
 
 ### DocType Access Patterns
 
