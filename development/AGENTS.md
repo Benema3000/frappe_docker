@@ -338,6 +338,24 @@ DocType paths under the inner dir use `mopi_app/mopiapp/doctype/`.
 - Reuse existing Frappe utilities, standard DocTypes, and framework patterns
   before creating new abstractions.
 
+### List views must be searchable by human title/name
+
+Serial-named DocTypes (`format:`, `hash`, `naming_series:`) are unfindable by
+ID alone. For every non-child, non-single DocType staff work with:
+
+- Set `title_field` to the human title. The v16 list view automatically shows
+  the title field as a standard filter box (`base_list.js` includes it), so no
+  extra flag is needed for that field.
+- Add `"in_standard_filter": 1` to further name/email fields users search by
+  (works on hidden fields too).
+- Set doctype-level `search_fields` so Link-field typeahead and the awesomebar
+  find records by those texts.
+- DocTypes autonamed by their title field (`field:title`, `field:code`) need
+  none of this — the ID search already is the title search.
+
+Applied to good_event and miki_app (2026-07-10). Other apps carry their open
+per-DocType suggestions in their own `AGENTS.md`.
+
 ### DocType Access Patterns
 
 - Use `frappe.get_cached_doc` when fetching a document repeatedly.
