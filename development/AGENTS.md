@@ -76,7 +76,7 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`good_help`](frappe-bench/apps/good_help/AGENTS.md) | Embedded Desk help center backed by Frappe Wiki | `wiki` | Syncs `fixtures/help/<app>/` Markdown into Wiki Documents |
 | [`mopi_app`](frappe-bench/apps/mopi_app/AGENTS.md) | Training modules, certificates, task campaigns, employee groups | `erpnext`, `good_connector`, `good_help` | Innermost dir is `mopiapp/` (mismatch — `frappe.scrub("MoPiApp")`) |
 | [`barakah_app`](frappe-bench/apps/barakah_app/AGENTS.md) | Aqeeqa / Well charity order workflows, daily reminders | `erpnext`, `good_connector`, `good_help` | |
-| [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership substrate (Member, Membership, Donation, Donor, …) | (standalone) | Dev branch in use: `miki-dev`. B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
+| [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership + major-gifts substrate (Member, Membership, Donation, Donor, Major Gift, Donor Interaction, …) | `erpnext` | Dev branch in use: `miki-dev`. B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
 | [`good_npo`](frappe-bench/apps/good_npo/AGENTS.md) | Generic Goodvantage NPO Desk / public presentation layer | `non_profit`, `good_connector`, `payrexx_integration`, `good_help` | Keep reusable; no Ilanga, Miki, or demo-only assumptions |
 | [`good_demo`](frappe-bench/apps/good_demo/AGENTS.md) | Public demo shell — signup, temporary users, reset/seed routines | `good_npo`, `good_connector`, `good_help` | Reset only data marked as demo seed/demo user |
 | [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector`, `good_help`, `payrexx_integration` | CRMMember Dataverse rebuild |
@@ -86,6 +86,7 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`good_event`](frappe-bench/apps/good_event/AGENTS.md) | Independent event/course registration platform — public catalogue, bookings, correspondence, payment integration, trainer settlement | `payrexx_integration`, `good_connector`, `good_help` | Renamed from `event_app`; hook-based architecture for customization; kibesuisse integrations optional via hooks |
 | [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
 | [`good_newsletter`](frappe-bench/apps/good_newsletter/AGENTS.md) | Newsletter campaigning (Mailchimp-lite) — campaigns to Email Groups via AWS SES, RFC 8058 unsubscribe, SNS bounce/complaint suppression, delivery stats | `good_connector`, `good_help` | Own per-recipient Email Queue builder (core bulk path can't do per-recipient headers/merge); MJML content via `mjml-python`; GrapesJS designer planned (v0.4) |
+| [`good_analytics`](frappe-bench/apps/good_analytics/AGENTS.md) | Apteco-style fundraising analytics — RFM donor scoring, static/dynamic donor segments, fixed-threshold dashboards (Desk page is app home), newsletter audience provider | `non_profit`, `good_connector`, `good_help` | Branch in use: `version-16`. Gate-then-aggregate model (checks Donation read, then aggregates system-wide); feeds `good_newsletter` audiences (inert without it) |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
 > `mopi_app` are two **different** apps in this bench. The user often says
@@ -107,10 +108,11 @@ good_help       (required_apps = ["wiki"])
 
 workflow_visualizer  (standalone optional Desk Workflow UI)
 
-non_profit      (standalone)
+non_profit      (required_apps = ["erpnext"])
     ├── good_npo      (required_apps = ["non_profit", "good_connector", "payrexx_integration", "good_help"])
     ├── ilanga_app    (required_apps = ["non_profit"])
-    └── miki_app      (required_apps = ["non_profit", "good_connector", "good_help", "payrexx_integration"])
+    ├── miki_app      (required_apps = ["non_profit", "good_connector", "good_help", "payrexx_integration"])
+    └── good_analytics (required_apps = ["non_profit", "good_connector", "good_help"])
 
 good_npo
     └── good_demo     (required_apps = ["good_npo", "good_connector", "good_help"])
@@ -145,6 +147,9 @@ good_newsletter (required_apps = ["good_connector", "good_help"])
   - `good_event_dunning_pdf_provider` — dunning PDF generation
   - `good_event_role_profile_provider` — role profile setup
   - `good_event_seed_data_provider` — seed data loading
+  - `good_event_organization_search_provider` — org (Customer) typeahead for org bookings
+  - `good_event_organization_membership_provider` — org membership / canton defaults
+  - `good_event_translation_provider` — taxonomy title translations
   For kibesuisse deployments, configure these hooks in `hooks.py` to point
   to miki_app implementations. Without hooks, good_event uses ERPNext-standard
   defaults. See `INDEPENDENCE_SUMMARY.md` for architecture details.
@@ -157,8 +162,10 @@ good_newsletter (required_apps = ["good_connector", "good_help"])
   owning app's normal workflow/document hooks.
 - **Correspondence framework** (`good_event/services/correspondence.py`):
   every outbound email goes through one dispatcher with a flow key. Auto
-  triggers honour an auto-toggle (`Good Event Email Settings`) plus per-event
-  override (`Good Event.disabled_email_flows`). Manual sends pass
+  triggers honour an auto-toggle (`Good Event Email Settings`) plus per-flow
+  `disable_email_<flow>` checkboxes resolved Event → Master → Type (see
+  `services/email_flows.py`; the old free-text `Good Event.disabled_email_flows`
+  field was migrated to these checkboxes). Manual sends pass
   `manual=True` to bypass the gate. Templates are de/fr/it `Email Template`
   fixtures named `good_event_<flow>_<lang>` — never overwritten on re-install.
 - **Payrexx pay-by-email** (`payrexx_integration.api.payrexx_pay_url`):
@@ -305,6 +312,8 @@ Current audit outcomes:
 | `miki_app` | `MiKi Declaration`, `MiKi Declaration Campaign`, `MiKi Category`, `MiKi Settings`, etc. |
 | `mopi_app` | `MoPi Training Module`, `MoPi Training Type`, `MoPi Task Campaign`, `MoPi Employee Group`, etc. |
 | `good_connector` | `Good Connector Available Language` for the settings child table |
+| `good_newsletter` | `Good Newsletter Campaign`, `Good Newsletter Audience`, `Good Newsletter Recipient`, `Good Newsletter Template`, etc. |
+| `good_analytics` | `Good Donor Segment`, `Good Donor RFM Score`, `Good Campaign Target Segment`, `Good Analytics Settings`, etc. |
 
 The mismatched ones in this bench:
 
@@ -478,7 +487,7 @@ against them.
   `good_connector.install_utils.clear_workspace_sidebar_app`; every
   sidebar-shipping app registers the hook (`mopi_app`, `barakah_app`,
   `ilanga_app`, `miki_app`, `good_event`, `good_connector`, `good_npo`,
-  `good_demo`, `good_help`).
+  `good_demo`, `good_help`, `good_newsletter`, `good_analytics`).
 - **Never let a Link field inherit the site's default silently in a shipped
   fixture.** Example: Number Card has a `currency` Link. If you insert a
   Count card without specifying `currency`, Frappe fills it from the
@@ -690,8 +699,9 @@ they are unless being touched. In-test jobs run synchronously
 - Run `bench migrate` after DocType schema changes.
 - **Install order matters**: `wiki` before `good_help`; `good_help` before
   apps with help fixtures; `good_connector` before `mopi_app` / `barakah_app`;
-  `non_profit` before `miki_app` / `ilanga_app`. ERPNext is required for
-  `mopi_app`, `barakah_app`, `miki_app` (they add custom fields to `Task`).
+  `non_profit` before `miki_app` / `ilanga_app` / `good_analytics`. ERPNext is
+  required for `mopi_app`, `barakah_app`, `miki_app` (they add custom fields to
+  `Task`) and for `non_profit` (and thus `good_analytics`).
 
 ---
 
