@@ -83,7 +83,7 @@ Miss → `{"ok": false, "status": 404}` (HTTP stays 200; branch on `ok`).
 
 ## 5. Built — portable PHP package
 
-Location: **`/workspace/development/good-event-embed/`** (standalone; not yet a git repo).
+Location: **`/workspace/development/good-event-embed/`** — standalone git repo (initial commit `b9d8cb2`, branch `main`, **no remote yet**). Ignored by the workspace master repo (`development/*`), so it stays independent. To hand off: add a remote (its own repo, or the kibesuisse TYPO3 repo) and push.
 
 ```
 src/GoodEventEmbed.php                      # portable core: fetch + renderHead/renderStyles/renderBody/render
@@ -111,7 +111,7 @@ has a built-in server-side cache (`cacheTtl`, default 300s). Host fetch is
 1. **good_event deploy config** (Good Event Settings + catalogues):
    - `seo_public_base_url = https://www.kibesuisse.ch`
    - On each **Good Event List** / **Good Event Master List**: set `seo_public_url` (e.g. `https://www.kibesuisse.ch/kurse`, `…/themen`). Events/topics inherit `<that URL>/<slug>`. Flips every canonical/OG/JSON-LD/breadcrumb/sitemap URL to the host.
-2. **Decide where the PHP package lives** — `git init` it standalone, or drop into the kibesuisse TYPO3 repo. (Open question, not yet decided.)
+2. **Give the PHP package a remote** — it's a standalone git repo now (`b9d8cb2`); add a remote (its own GitHub repo, or the kibesuisse TYPO3 repo) and push to hand it off.
 3. **TYPO3 wiring on kibesuisse** (site-specific, in their TYPO3 repo — see package README):
    - Route enhancer mapping `/kurse/<slug>` (+ `/themen`, list roots) to a `slug` arg.
    - TypoScript `page.NN = USER` → `GoodEvent\Embed\Typo3\GoodEventContentElement->render` with `baseUrl` + `kind`. Use **cached `USER`** (not `USER_INT`) so SEO head tags reach `<head>`.
