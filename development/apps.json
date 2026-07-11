@@ -1,0 +1,27 @@
+[
+	{
+		"_comment": "Reference manifest of every app in this bench (upstream + custom), for recreating the dev setup on another machine. Order follows install dependencies; see development/AGENTS.md for the full dependency graph and install-order notes. App source lives in the individual repos below, not in this frappe_docker repo.",
+		"frappe_base_branch": "version-16"
+	},
+	{ "app": "frappe", "url": "https://github.com/frappe/frappe.git", "branch": "version-16", "kind": "upstream" },
+	{ "app": "erpnext", "url": "https://github.com/frappe/erpnext.git", "branch": "version-16", "kind": "upstream" },
+	{ "app": "payments", "url": "https://github.com/frappe/payments", "branch": "version-16", "kind": "upstream" },
+	{ "app": "wiki", "url": "https://github.com/frappe/wiki", "branch": "version-3", "kind": "upstream" },
+	{ "app": "builder", "url": "https://github.com/frappe/builder", "branch": "develop", "kind": "upstream" },
+	{ "app": "buzz", "url": "https://github.com/BuildWithHussain/buzz", "branch": "main", "kind": "upstream" },
+	{ "app": "Commit", "url": "https://github.com/The-Commit-Company/Commit.git", "branch": "main", "kind": "upstream" },
+	{ "app": "good_connector", "url": "https://github.com/SpendeDirekt/good_connector.git", "branch": "main", "kind": "custom" },
+	{ "app": "good_help", "url": "https://github.com/SpendeDirekt/good_help.git", "branch": "main", "kind": "custom" },
+	{ "app": "non_profit", "url": "https://github.com/OpenNGO-Project/non_profit.git", "branch": "miki-dev", "kind": "custom" },
+	{ "app": "payrexx_integration", "url": "https://github.com/Goodvantage/payrexx_integration.git", "branch": "version-16", "kind": "custom" },
+	{ "app": "mopi_app", "url": "https://github.com/SpendeDirekt/mopi_app.git", "branch": "main", "kind": "custom" },
+	{ "app": "barakah_app", "url": "https://github.com/SpendeDirekt/barakah_app.git", "branch": "main", "kind": "custom" },
+	{ "app": "good_npo", "url": "https://github.com/SpendeDirekt/good_npo.git", "branch": "main", "kind": "custom" },
+	{ "app": "good_demo", "url": "https://github.com/SpendeDirekt/good_demo.git", "branch": "main", "kind": "custom" },
+	{ "app": "miki_app", "url": "https://github.com/SpendeDirekt/miki_app.git", "branch": "main", "kind": "custom" },
+	{ "app": "ilanga_app", "url": "https://github.com/SpendeDirekt/ilanga_app.git", "branch": "main", "kind": "custom" },
+	{ "app": "good_event", "url": "https://github.com/SpendeDirekt/good_event.git", "branch": "main", "kind": "custom" },
+	{ "app": "good_newsletter", "url": "https://github.com/SpendeDirekt/good_newsletter.git", "branch": "main", "kind": "custom" },
+	{ "app": "good_analytics", "url": "https://github.com/SpendeDirekt/good_analytics.git", "branch": "version-16", "kind": "custom" },
+	{ "app": "workflow_visualizer", "url": "https://github.com/SpendeDirekt/workflow_visualizer.git", "branch": "version-16", "kind": "custom" }
+]

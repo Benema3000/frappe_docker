@@ -4,10 +4,21 @@
 # mounted volume
 sites
 
+# Large local backups / state dumps — never commit
+codex-backups/
+*.tar.gz
+
+# Ignore the whole bench working dir (app source lives in its own repos, and
+# sites/ holds secrets), but keep the guidance docs, audits, app manifest, and
+# setup scripts that let us recreate this dev setup on another machine.
 development/*
+!development/*.md
+!development/*.json
 !development/README.md
 !development/installer.py
-!development/apps-example.json
+!development/setup_v16.sh
+!development/swaess-demo-reapply.py
+!development/swaess-demo-seed.py
 !development/vscode-example/
 
 # Pycharm
