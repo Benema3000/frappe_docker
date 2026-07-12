@@ -83,7 +83,7 @@ Miss → `{"ok": false, "status": 404}` (HTTP stays 200; branch on `ok`).
 
 ## 5. Built — portable PHP package
 
-Location: **`/workspace/development/good-event-embed/`** — standalone git repo (initial commit `b9d8cb2`, branch `main`, **no remote yet**). Ignored by the workspace master repo (`development/*`), so it stays independent. To hand off: add a remote (its own repo, or the kibesuisse TYPO3 repo) and push.
+Location: **`/workspace/development/good-event-embed/`** — standalone git repo, pushed to **github.com/SpendeDirekt/good-event-embed** (branch `main`). Ignored by the workspace master repo (`development/*`), so it stays independent. Its **`AGENTS.md`** is the setup runbook for the integrating agent (inputs → API preflight → TYPO3/WP wiring → good_event settings → crawler-style verification checklist).
 
 ```
 src/GoodEventEmbed.php                      # portable core: fetch + renderHead/renderStyles/renderBody/render
@@ -112,8 +112,8 @@ has a built-in server-side cache (`cacheTtl`, default 300s). Host fetch is
    - `seo_public_base_url = https://www.kibesuisse.ch`
    - On each **Good Event List** / **Good Event Master List**: set `seo_public_url` (e.g. `https://www.kibesuisse.ch/kurse`, `…/themen`). Events/topics inherit `<that URL>/<slug>`. Flips every canonical/OG/JSON-LD/breadcrumb/sitemap URL to the host.
    - **Why:** the content is reachable at both the Frappe host and the host domain — that's duplicate content. The canonical (driven by these settings) tells Google the host copy is authoritative, so kibesuisse.ch ranks and not the Frappe URL. Empty settings → the embedded host page's canonical points back at Frappe (tells Google to rank the Frappe copy — backwards). See `apps/good_event/DOCUMENTATION.md` → "Why these URLs matter".
-2. **Give the PHP package a remote** — it's a standalone git repo now (`b9d8cb2`); add a remote (its own GitHub repo, or the kibesuisse TYPO3 repo) and push to hand it off.
-3. **TYPO3 wiring on kibesuisse** (site-specific, in their TYPO3 repo — see package README):
+2. ~~Give the PHP package a remote~~ — **done 2026-07-12**: pushed to github.com/SpendeDirekt/good-event-embed, incl. an `AGENTS.md` setup runbook.
+3. **TYPO3 wiring on kibesuisse** (site-specific, in their TYPO3 repo — see package README + `AGENTS.md`):
    - Route enhancer mapping `/kurse/<slug>` (+ `/themen`, list roots) to a `slug` arg.
    - TypoScript `page.NN = USER` → `GoodEvent\Embed\Typo3\GoodEventContentElement->render` with `baseUrl` + `kind`. Use **cached `USER`** (not `USER_INT`) so SEO head tags reach `<head>`.
    - Clear TYPO3 page cache when an event publishes (later: webhook).
