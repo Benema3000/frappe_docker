@@ -111,6 +111,7 @@ has a built-in server-side cache (`cacheTtl`, default 300s). Host fetch is
 1. **good_event deploy config** (Good Event Settings + catalogues):
    - `seo_public_base_url = https://www.kibesuisse.ch`
    - On each **Good Event List** / **Good Event Master List**: set `seo_public_url` (e.g. `https://www.kibesuisse.ch/kurse`, `…/themen`). Events/topics inherit `<that URL>/<slug>`. Flips every canonical/OG/JSON-LD/breadcrumb/sitemap URL to the host.
+   - **Why:** the content is reachable at both the Frappe host and the host domain — that's duplicate content. The canonical (driven by these settings) tells Google the host copy is authoritative, so kibesuisse.ch ranks and not the Frappe URL. Empty settings → the embedded host page's canonical points back at Frappe (tells Google to rank the Frappe copy — backwards). See `apps/good_event/DOCUMENTATION.md` → "Why these URLs matter".
 2. **Give the PHP package a remote** — it's a standalone git repo now (`b9d8cb2`); add a remote (its own GitHub repo, or the kibesuisse TYPO3 repo) and push to hand it off.
 3. **TYPO3 wiring on kibesuisse** (site-specific, in their TYPO3 repo — see package README):
    - Route enhancer mapping `/kurse/<slug>` (+ `/themen`, list roots) to a `slug` arg.
@@ -137,5 +138,6 @@ signup page uses this shell.
 ## 9. Notes
 
 - The client-side `public/js/embed.js` still exists (lists/master-lists only) but does not rank; the server-side API supersedes it for SEO.
+- **Frappe-host visibility (a deploy choice):** either keep the Frappe host crawlable and rely on the canonical → kibesuisse (forgiving), or keep it out of the index (robots/noindex, or simply don't link it) so only kibesuisse.ch is crawled. Both work; the `seo_public_*` settings are needed either way — they make the host page's own canonical + JSON-LD correct.
 - CORS: not needed — the host fetches server-side. (`allow_cors:*` is set on the dev site anyway.)
 - Dev site: `development16.localhost`; live fetch tested at `http://localhost:8000` (Host: development16.localhost).
