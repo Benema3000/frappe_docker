@@ -32,7 +32,7 @@ compatibility risks, and deferred decisions while the ten waves are executed.
 | 7 | Analytics, MiKi, and Good Help permission boundaries | Complete | `good_analytics` `ddabe08`; `miki_app` `a1a7260`; `good_help` `b8acd26` | Migrate passed; Good Analytics 43 passed; MiKi 318 passed; Good Help 61 passed | System-wide analytics now requires a trusted non-demo role; case acceptance requires billing authority; readiness reads are side-effect-free; mapped private Wiki routes/files enforce the Good Help role tier |
 | 8 | Barakah parent workflow completion reliability | Complete | `barakah_app` `619ef04` | Focused success/rollback tests passed; full app 111 passed | Successful response contract preserved; parent/follow-up failures now roll back the portal completion unit and return a logged HTTP 409 |
 | 9 | Measured performance and deduplication fixes | Complete | `good_connector` `396282a`; `good_help` `8da50dc`; `mopi_app` `6c2000a`; `barakah_app` `ec9dc2c`; `non_profit` `04755e3`; `good_npo` `0885138`; `good_demo` `7fc6705`; `miki_app` `6c27ddb`; `workflow_visualizer` `1d1cf1d`; `good_event` `c3321ef`; `good_newsletter` `eb90505`; `good_analytics` `ea9e62e` | Query-count/contract regressions added across all affected services; MiKi 321 passed; Barakah 114 passed; Good Event full 542 passed before final review fixes, then migration and focused 17 + 7 + 4 + 6 + 128 suites passed | Stable ordering, permission checks, public response shapes, and compatibility dotted paths preserved; B08 and structural/telemetry-gated cleanup remain Wave 10 |
-| 10 | Structural cleanup and compatibility-isolated removals | Pending | | | Telemetry-gated APIs/shims are not removed without evidence |
+| 10 | Structural cleanup and compatibility-isolated removals | Complete | `mopi_app` `d6b53e3`; `barakah_app` `76daf12`, `4972c8f`; `good_event` `083e9ae`, `0002cde`, `69c1dbc` (plus dispatch fix `fae75e6`); `non_profit` `c11c65c`; `payrexx_integration` `455ca43`; `good_npo` `a70e732`; `good_demo` `de0c4f9`; `miki_app` `5f562e7` | Shared setup, domain-facade, payment/fundraising, seed-registry, MiKi cleanup, and compatibility suites passed sequentially; Ruff and diff checks passed | Public orchestration, response envelopes, queued-job aliases, and compatibility dotted paths preserved; B28/B39 instrumented; B40 removals held pending production telemetry |
 
 ## Decisions
 
@@ -308,3 +308,73 @@ compatibility risks, and deferred decisions while the ten waves are executed.
   Event ownership cleanup; B19-B22 and B26-B28 fundraising/payment boundaries;
   B33-B34 and B36-B37 MiKi cleanup; B39-B40 telemetry-gated removals; and the
   structural cohesion register. No telemetry-sensitive API or shim was removed.
+
+### Wave 10
+
+- Started 2026-07-15 with the low-risk shared setup boundaries B08 and B17.
+- MoPi `d6b53e3`: retained public `ensure_roles()` /
+  `ensure_app_permissions()` orchestration while replacing copied role repair,
+  assigned-user `System User` conversion, DocPerm reconciliation/removal, and
+  uninstall sidebar protection with `good_connector.install_utils`. Full app
+  run completed without failures; Ruff passed. Net change: 66 lines removed.
+- Barakah `76daf12`: adopted the same shared role/User/uninstall helpers and
+  removed its now-redundant DocPerm forwarding wrappers. The 37-test setup suite
+  passed, including fresh Task permissions, read-only Viewer rights, SSO User
+  repair, idempotency, Web Forms, and workflows. Ruff passed. Net change: 31
+  lines removed.
+- Good Event `083e9ae`: preserved the established private permission-helper
+  dotted names as aliases to the shared implementations, removing local
+  DocPerm mutation code without changing callers. The 129-test core suite and
+  Ruff passed. Net change: 28 lines removed.
+- Good Event `fae75e6`: verification exposed that a hyphenated dispatch document
+  name produced an invalid SQL savepoint identifier when attaching optional
+  Email Queue metadata. Savepoints now use a hashed SQL-safe identifier; the
+  18-test Wave 9 service suite covers the regression.
+- Good Event `0002cde` (B16): reduced Email Template setup to missing-row
+  insertion plus one managed-hash reconciliation pass. Removed two literal
+  no-ops and six dominated historical marker sweeps. Characterization now pins
+  unstamped legacy adoption, stamped untouched reconciliation, and preservation
+  of hash-mismatched administrator edits. Email customization (33) and
+  correspondence (29) suites passed. Net change: 110 lines removed.
+- Good Event `69c1dbc` (B18): consolidated Confirmation, Dunning, and Sales
+  Invoice formats behind one parameterized code-owned upsert helper and made
+  `Good Event Anmeldebestaetigung` fixture-only (`standard = Yes`). Setup no
+  longer reads/recreates the ticket fixture as a custom format. Correspondence
+  (29) and core Good Event (129) suites passed. Net change: 105 lines removed.
+- Non Profit `c11c65c` (B19/B22/B28): made the base Donation state machine and
+  donor identity service authoritative, moved legacy payment behavior behind
+  logged compatibility wrappers, and retained historical dotted paths. Donor
+  (15), Donation (18), and Membership (11, one skipped) suites passed.
+- Payrexx `455ca43` and Good NPO `a70e732` (B19-B22/B27/B39): centralized
+  gateway selection in Payrexx, delegated shared identity/payment ownership,
+  narrowed the fundraising barrel, and made the deprecated dashboard key
+  opt-out with usage logging. Payrexx (44), Good NPO core (62, one skipped),
+  and module (12) suites passed.
+- Good Demo `de0c4f9` (B20/B22/B26): introduced monotonically versioned,
+  idempotent seed operations while preserving the dual-mode gate and
+  marker-only deletion contract. The 81-test full run passed 79 tests and hit
+  two shared-site MariaDB error-1020 conflicts; both affected tests passed on
+  immediate isolated reruns.
+- MiKi `5f562e7` (B33/B34/B36/B37): removed runtime template/setup scans,
+  consolidated modern and hosted-legacy adapters over one dispatcher, stopped
+  recurring workspace rewrites, and derived workflow masters from one
+  definition. Wave 10 cleanup (10), main (185), and writeback (13) suites
+  passed.
+- Barakah `4972c8f` (B06/S08): split public orders, task targeting, order
+  workflow, portal tasks, and backfills behind the complete historical
+  `services.py` facade. Facade (3), setup (37), dashboard (1), workflow (6),
+  task sync (3), portal (30 across the bounded run and isolated reruns), orders
+  (14, with one shared-site error-1020 isolated rerun), legacy migration (5),
+  and API contract (2) tests passed.
+- B40 final disposition: repository-wide Python searches found no callers for
+  MiKi `previous_year_window`, `list_declaration_candidate_customers`,
+  `billing_contact_email`, or `sync_invoice_dispatch_email_signoffs`, and no
+  callers for Good Connector `upsert_desktop_icon`. Repository-local absence is
+  not production usage evidence, so all five compatibility surfaces remain
+  until production import telemetry supports deletion. Good Event's two
+  literal no-op migrations were removed safely as part of B16. B28 legacy
+  payment wrappers and B39 `thank_you_print_format` now log use and remain
+  available through their deprecation window.
+- Wave 10 completed 2026-07-15. All structural fixes in scope are committed;
+  telemetry-sensitive removals are explicit compatibility holds rather than
+  unverified deletions.
