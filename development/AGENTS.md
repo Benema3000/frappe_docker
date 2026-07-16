@@ -77,10 +77,10 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`mopi_app`](frappe-bench/apps/mopi_app/AGENTS.md) | Training modules, certificates, task campaigns, employee groups | `erpnext`, `good_connector`, `good_help` | Innermost dir is `mopiapp/` (mismatch — `frappe.scrub("MoPiApp")`) |
 | [`barakah_app`](frappe-bench/apps/barakah_app/AGENTS.md) | Aqeeqa / Well charity order workflows, daily reminders | `erpnext`, `good_connector`, `good_help` | |
 | [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership + major-gifts substrate (Member, Membership, Donation, Donor, Major Gift, Donor Interaction, …) | `erpnext` | Dev branch in use: `miki-dev`. B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
-| [`good_npo`](frappe-bench/apps/good_npo/AGENTS.md) | Generic Goodvantage NPO Desk / public presentation layer | `non_profit`, `good_connector`, `payrexx_integration`, `good_help` | Keep reusable; no Ilanga, Miki, or demo-only assumptions |
+| [`good_npo`](frappe-bench/apps/good_npo/AGENTS.md) | Generic Goodvantage NPO Desk / public presentation layer | `non_profit`, `good_connector`, `payrexx_integration`, `good_help` | Keep reusable; no ilanga, Miki, or demo-only assumptions |
 | [`good_demo`](frappe-bench/apps/good_demo/AGENTS.md) | Public demo shell — signup, temporary users, reset/seed routines | `good_npo`, `good_connector`, `good_help` | Reset only data marked as demo seed/demo user |
 | [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector`, `good_help`, `payrexx_integration` | CRMMember Dataverse rebuild |
-| [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Theming / seeding / dashboard layer for Ilanga fundraising | `non_profit` | Proof-of-concept only — out of scope for remediation/refactors; no custom doctypes |
+| [`ilanga_app`](frappe-bench/apps/ilanga_app/AGENTS.md) | Lowercase `ilanga` Desk identity and editable Builder website | `good_npo`, `builder` | Thin presentation shell; no custom doctypes or NPO business logic |
 | [`workflow_visualizer`](frappe-bench/apps/workflow_visualizer/AGENTS.md) | Opt-in Desk process rail for standard Frappe Workflows | (standalone) | Branch in use: `version-16` |
 | [`buzz`](frappe-bench/apps/buzz/AGENTS.md) | Upstream events / ticketing / sponsorships SPA. Provides `Buzz Event`, `Event Booking`, `Event Ticket`, etc. | (standalone) | Upstream — never patch directly |
 | [`good_event`](frappe-bench/apps/good_event/AGENTS.md) | Independent event/course registration platform — public catalogue, bookings, correspondence, payment integration, trainer settlement | `payrexx_integration`, `good_connector`, `good_help` | Renamed from `event_app`; hook-based architecture for customization; kibesuisse integrations optional via hooks |
@@ -110,12 +110,12 @@ workflow_visualizer  (standalone optional Desk Workflow UI)
 
 non_profit      (required_apps = ["erpnext"])
     ├── good_npo      (required_apps = ["non_profit", "good_connector", "payrexx_integration", "good_help"])
-    ├── ilanga_app    (required_apps = ["non_profit"])
     ├── miki_app      (required_apps = ["non_profit", "good_connector", "good_help", "payrexx_integration"])
     └── good_analytics (required_apps = ["non_profit", "good_connector", "good_help"])
 
 good_npo
-    └── good_demo     (required_apps = ["good_npo", "good_connector", "good_help"])
+    ├── good_demo     (required_apps = ["good_npo", "good_connector", "good_help"])
+    └── ilanga_app    (required_apps = ["good_npo", "builder"])
 
 buzz            (standalone — upstream)
 payments        (standalone — upstream; never patch)
@@ -147,6 +147,7 @@ good_newsletter (required_apps = ["good_connector", "good_help"])
   - `good_event_dunning_pdf_provider` — dunning PDF generation
   - `good_event_role_profile_provider` — role profile setup
   - `good_event_seed_data_provider` — seed data loading
+  - `good_event_qr_iban_provider` — optional QR-IBAN resolver by Sales Invoice Company
   - `good_event_organization_search_provider` — org (Customer) typeahead for org bookings
   - `good_event_organization_membership_provider` — org membership / canton defaults
   - `good_event_translation_provider` — taxonomy title translations
@@ -322,7 +323,7 @@ The mismatched ones in this bench:
 | `mopi_app` | `mopi_app/mopi_app/` | `mopiapp/` | `MoPiApp` |
 | `miki_app` | `miki_app/miki_app/` | `miki_app/` | `MiKi App` |
 | `non_profit` | `non_profit/non_profit/` | `non_profit/` | `Non Profit` |
-| `ilanga_app` | `ilanga_app/ilanga_app/` | `ilanga_app/` | `Ilanga App` |
+| `ilanga_app` | `ilanga_app/ilanga_app/` | `ilanga/` | `ilanga` |
 
 `mopi_app` is the surprising one — Python imports use `mopi_app.*` but
 DocType paths under the inner dir use `mopi_app/mopiapp/doctype/`.
