@@ -38,6 +38,28 @@ This is the bench-level overview. Per-app specifics live in each app's own
   `apps/payments`, `apps/builder`, `apps/buzz`. The `apps/Commit` app is also
   off-limits.
 
+## Custom App Versioning
+
+- Custom app versions are tracked release metadata. When changing a custom app,
+  inspect its current version and decide whether the change requires a version
+  bump; do not leave a release-facing behavior, schema, API, dependency, or
+  compatibility change on the previous version accidentally.
+- Keep the leading version aligned with the supported Frappe major (`16` on
+  this bench). Use the next component for substantial backward-compatible
+  functionality and the patch component for backward-compatible fixes or small
+  release changes. Reserve a new leading version for the corresponding Frappe
+  major or an explicitly planned incompatible release.
+- Do not bump versions mechanically for every internal refactor, test-only
+  change, or documentation edit. Make the decision deliberately based on
+  whether the app is being released or its installed behavior/contract changed.
+- Version declarations differ between repositories. Search the app before
+  editing and keep every declaration in sync, including the package
+  `__init__.py`, `pyproject.toml` when it declares a project version, and any
+  additional app-specific version source. Include the required bump in the same
+  change as the behavior that needs it.
+- Never apply this custom-app versioning policy by modifying upstream/off-limits
+  apps.
+
 ## Custom App Documentation
 
 - Every custom app must keep both root-level docs:

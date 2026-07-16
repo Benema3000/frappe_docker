@@ -40,6 +40,8 @@ compatibility risks, and deferred decisions while the ten waves are executed.
 |---|---|
 | H4 MoPi certificate issuers | Restrict issuance to `MoPi Manager` or a dedicated issuer role; ordinary `MoPi User` is not an issuer. |
 | H13 Payrexx chargebacks | Preserve submitted accounting records and create an idempotent, linked accounting exception for manual reversal rather than silently cancelling ledger entries. |
+| B13 Good Event migration scans | Out of scope by user decision on 2026-07-15; migration optimization is not relevant to the current completion decision. |
+| S01-S04 MiKi cohesion suggestions | Explicitly deferred until behavior in each area changes; the audit says these boundaries must not trigger arbitrary file splitting by themselves. |
 | Compatibility-sensitive APIs | Keep stable dotted paths and use thin facades until production telemetry supports removal. |
 
 ## Progress Log
@@ -378,3 +380,49 @@ compatibility risks, and deferred decisions while the ten waves are executed.
 - Wave 10 completed 2026-07-15. All structural fixes in scope are committed;
   telemetry-sensitive removals are explicit compatibility holds rather than
   unverified deletions.
+
+### Post-Wave Completion Check
+
+- Rechecked the authoritative register after Wave 10. The user explicitly
+  excluded migration optimization, so B13's recurring Good Event setup scan is
+  recorded as out of scope rather than treated as a release blocker.
+- B20 completed in Good NPO `e6459fb` and Good Demo `97e05c6`: generic Good NPO no longer seeds or identifies the
+  `GOODNPO-DEMO` campaign, reads MiKi Settings for QR fallback, hard-codes the
+  `/demo` CTA, or reads `frappe.boot.good_demo`. Good Demo owns its campaign and
+  dashboard CTA through the existing provider boundary. Good NPO module (14),
+  core (62, one skipped), and Good Demo (82) suites passed.
+- H12/H14 completion evidence added in Payrexx `39cce4c`: the first invoice click now has a
+  regression proving one provider checkout, one Payment Request, and one
+  Integration Request; the deadlock regression performs settlement before the
+  simulated failure and proves rollback/retry leaves one submitted Payment
+  Entry and a completed Integration Request. The full Payrexx suite passed 46
+  tests.
+- M3 completion evidence strengthened in Good Newsletter `02e0a6f`: SNS certificate and subscription fetches
+  explicitly require CA-verified HTTPS and disable redirects while retaining
+  canonical Topic ARN, regional host, and path validation. TLS and connection
+  failures fail closed. The SNS suite passed 23 tests.
+- L1 completion evidence added in Good Event `5e8c9ab`: the public catalogue fragment's GET rate limit
+  is exercised at its boundary, and a realistic 25-event catalogue test pins a
+  24-row page, next-page behavior, a 45-query ceiling, and a zero-query cache
+  hit. The Good Event Wave 9 service suite passed 20 tests.
+- Production telemetry for B28/B39/B40 and historical accounting/data review
+  remain operational holds. No submitted ledger rows or previously marked demo
+  records were mutated as part of this code-completion pass.
+
+### MiKi Net-Deletion Follow-Up
+
+- Removed the unused custom Customer CSV/JSON export (`miki_app.exports` and
+  `miki_app.api.customer_export`). Operators use Frappe Desk/Data Export for
+  permitted Customer rows and current MiKi reports for joined operational
+  views.
+- Removed the obsolete declaration-campaign post-invoice orchestration from
+  `escalation.py` and `dunning.py`. Campaign escalation now queries only
+  pre-invoice `ACTIVE_STATES`; `receivable_escalation.py` remains the sole
+  scheduled post-invoice owner. Shared active dunning creation, snapshots,
+  correspondence, and workflow states remain intact.
+- Net change before commit: 552 production code/asset lines and 356 test lines
+  removed; 888 total tracked lines removed after documentation updates.
+- Verification: the 22-test receivables suite, 56-test end-to-end module, and
+  183-test core module all pass. The end-to-end QR assertion now verifies the
+  configured MiKi Settings QR-IBAN instead of assuming the optional clean-site
+  seed value.
