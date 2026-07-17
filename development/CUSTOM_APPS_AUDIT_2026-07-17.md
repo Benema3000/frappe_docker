@@ -594,8 +594,9 @@ audit:
 ## Remediation Log (2026-07-17)
 
 Implemented same-day per user instruction; everything not listed here was
-deliberately left as-is. No git commits were made — changes are in the
-working trees of the respective repos.
+deliberately left as-is. Committed and pushed 2026-07-17: `mopi_app`
+`0ec9b9b`, `miki_app` `b9fe94b`, `good-event-embed` `12164f6` (all
+`main`).
 
 | Finding | Repo | Fix | Verification |
 |---|---|---|---|
