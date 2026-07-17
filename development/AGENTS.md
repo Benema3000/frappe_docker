@@ -109,6 +109,7 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
 | [`good_newsletter`](frappe-bench/apps/good_newsletter/AGENTS.md) | Newsletter campaigning (Mailchimp-lite) — campaigns to Email Groups via AWS SES, RFC 8058 unsubscribe, SNS bounce/complaint suppression, delivery stats | `good_connector`, `good_help` | Own per-recipient Email Queue builder (core bulk path can't do per-recipient headers/merge); MJML content via `mjml-python`; GrapesJS designer planned (v0.4) |
 | [`good_analytics`](frappe-bench/apps/good_analytics/AGENTS.md) | Apteco-style fundraising analytics — RFM donor scoring, static/dynamic donor segments, fixed-threshold dashboards (Desk page is app home), newsletter audience provider | `non_profit`, `good_connector`, `good_help` | Branch in use: `version-16`. Gate-then-aggregate model (checks Donation read, then aggregates system-wide); feeds `good_newsletter` audiences (inert without it) |
+| [`goodvantage_app`](frappe-bench/apps/goodvantage_app/AGENTS.md) | Goodvantage customisations on top of vanilla ERPNext | `erpnext` | Product layer; no dependencies on other Goodvantage apps |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
 > `mopi_app` are two **different** apps in this bench. The user often says
@@ -146,6 +147,8 @@ payments        (standalone — upstream; never patch)
 good_event      (required_apps = ["payrexx_integration", "good_connector", "good_help"])
 
 good_newsletter (required_apps = ["good_connector", "good_help"])
+
+goodvantage_app (required_apps = ["erpnext"])
 ```
 
 ### Cross-cutting patterns to be aware of
