@@ -62,16 +62,23 @@ This is the bench-level overview. Per-app specifics live in each app's own
 
 ## Custom App Documentation
 
-- Every custom app must keep both root-level docs:
+- Every custom app must keep these root-level docs:
+  - `REQUIREMENTS.md` for numbered, traceable requirements (functional and
+    non-functional). This is the requirement-level source of truth.
   - `HOW_TO.md` for operator/admin workflows and common procedures.
   - `DOCUMENTATION.md` for technical architecture, doctypes, hooks, APIs,
     operational contracts, and tests.
+- Requirements, documentation, how-to, and code must match. When new
+  requirements arrive or existing ones change, record them in
+  `REQUIREMENTS.md` (keep requirement IDs stable) and keep the other
+  artifacts in sync with the same change.
 - When changing behavior in a custom app, update the relevant doc in the same
   change. New workflows, doctypes, public APIs, scheduled jobs, email flows,
   migrations, setup steps, or test commands should not land without docs.
 - Keep `README.md` short and install/status focused. Keep `AGENTS.md` focused
-  on coding-agent rules and gotchas; link to `HOW_TO.md` and
-  `DOCUMENTATION.md` for user-facing and technical reference material.
+  on coding-agent rules and gotchas; link to `REQUIREMENTS.md`, `HOW_TO.md`
+  and `DOCUMENTATION.md` for requirement, user-facing, and technical
+  reference material.
 - Do not add these docs to upstream/off-limits apps (`frappe`, `erpnext`,
   `payments`, `builder`, `buzz`, `Commit`) unless explicitly asked.
 
@@ -98,7 +105,7 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`good_help`](frappe-bench/apps/good_help/AGENTS.md) | Embedded Desk help center backed by Frappe Wiki | `wiki` | Syncs `fixtures/help/<app>/` Markdown into Wiki Documents |
 | [`mopi_app`](frappe-bench/apps/mopi_app/AGENTS.md) | Training modules, certificates, task campaigns, employee groups | `erpnext`, `good_connector`, `good_help` | Innermost dir is `mopiapp/` (mismatch — `frappe.scrub("MoPiApp")`) |
 | [`barakah_app`](frappe-bench/apps/barakah_app/AGENTS.md) | Aqeeqa / Well charity order workflows, daily reminders | `erpnext`, `good_connector`, `good_help` | |
-| [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership + major-gifts substrate (Member, Membership, Donation, Donor, Major Gift, Donor Interaction, …) | `erpnext` | Dev branch in use: `miki-dev`. B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
+| [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership + major-gifts substrate (Member, Membership, Donation, Donor, Major Gift, Donor Interaction, …) | `erpnext` | Branch in use: `version-16` (`miki-dev` merged in). B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
 | [`good_npo`](frappe-bench/apps/good_npo/AGENTS.md) | Generic Goodvantage NPO Desk / public presentation layer | `non_profit`, `good_connector`, `payrexx_integration`, `good_help` | Keep reusable; no ilanga, Miki, or demo-only assumptions |
 | [`good_demo`](frappe-bench/apps/good_demo/AGENTS.md) | Public demo shell — signup, temporary users, reset/seed routines | `good_npo`, `good_connector`, `good_help` | Reset only data marked as demo seed/demo user |
 | [`miki_app`](frappe-bench/apps/miki_app/AGENTS.md) | kibesuisse Beitragserklärung — yearly contribution declaration for KiTa / SEB / TFO providers | `non_profit`, `good_connector`, `good_help`, `payrexx_integration` | CRMMember Dataverse rebuild |
@@ -109,7 +116,7 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`payrexx_integration`](frappe-bench/apps/payrexx_integration/AGENTS.md) | Payrexx hosted-checkout payment gateway. Provides `Payrexx Settings` doctype + pay-by-email URL helper | `payments` | Standalone app on top of upstream `payments`; same pattern as Stripe / Paymob, but external to keep upstream upgrade-safe |
 | [`good_newsletter`](frappe-bench/apps/good_newsletter/AGENTS.md) | Newsletter campaigning (Mailchimp-lite) — campaigns to Email Groups via AWS SES, RFC 8058 unsubscribe, SNS bounce/complaint suppression, delivery stats | `good_connector`, `good_help` | Own per-recipient Email Queue builder (core bulk path can't do per-recipient headers/merge); MJML content via `mjml-python`; GrapesJS designer planned (v0.4) |
 | [`good_analytics`](frappe-bench/apps/good_analytics/AGENTS.md) | Apteco-style fundraising analytics — RFM donor scoring, static/dynamic donor segments, fixed-threshold dashboards (Desk page is app home), newsletter audience provider | `non_profit`, `good_connector`, `good_help` | Branch in use: `version-16`. Gate-then-aggregate model (checks Donation read, then aggregates system-wide); feeds `good_newsletter` audiences (inert without it) |
-| [`goodvantage_app`](frappe-bench/apps/goodvantage_app/AGENTS.md) | Goodvantage customisations on top of vanilla ERPNext | `erpnext` | Product layer; no dependencies on other Goodvantage apps |
+| [`goodvantage_app`](frappe-bench/apps/goodvantage_app/AGENTS.md) | Goodvantage customisations on top of vanilla ERPNext and HRMS | `erpnext`, `hrms` | Product layer; no dependencies on other Goodvantage apps |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
 > `mopi_app` are two **different** apps in this bench. The user often says
@@ -148,7 +155,7 @@ good_event      (required_apps = ["payrexx_integration", "good_connector", "good
 
 good_newsletter (required_apps = ["good_connector", "good_help"])
 
-goodvantage_app (required_apps = ["erpnext"])
+goodvantage_app (required_apps = ["erpnext", "hrms"])
 ```
 
 ### Cross-cutting patterns to be aware of
@@ -453,6 +460,12 @@ Use built-in helpers from `frappe.utils.data`: `cint`, `cstr`, `flt`,
 - Use `enqueue_after_commit=not frappe.flags.in_test` so jobs run
   synchronously during tests.
 - Never block request-response cycles with expensive business logic.
+- Custom bulk imports that save `Contact`, `Address`, `Customer`, `Supplier`,
+  or `Company` must wrap their write phase in
+  `good_connector.identity_matching.suppress_duplicate_scan_enqueue()` and
+  queue one `queue_full_duplicate_scan()` before the successful transaction
+  commits. Dry runs must roll back without queueing reconciliation. Never let
+  these imports enqueue one duplicate scan per saved record.
 
 ### Error Handling
 
@@ -669,6 +682,9 @@ user is restored via `try/finally`.
 ---
 
 ## Commands
+
+Browser and end-to-end test policy, suite inventory, and commands are in
+[`E2E_TESTING.md`](E2E_TESTING.md).
 
 ### Lint / format
 

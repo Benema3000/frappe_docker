@@ -20,8 +20,9 @@ custom apps listed in `/workspace/development/AGENTS.md`.
 
 ## Custom Apps
 
-- Update `HOW_TO.md` and `DOCUMENTATION.md` in the same custom app when behavior
-  changes.
+- Update `REQUIREMENTS.md`, `HOW_TO.md` and `DOCUMENTATION.md` in the same
+  custom app when requirements or behavior change; requirements,
+  documentation, how-to, and code must match.
 - Keep `README.md` short and install/status focused.
 - Add or update tests for behavior changes and regressions.
 - All `@frappe.whitelist()` functions need type hints.

@@ -172,7 +172,7 @@ System Manager-only user reads a non-case Issue.
 
 ### Low
 
-#### N3. Portal `GetData` bypasses the `enabled=1` gate for Good Link/Good News
+#### N3. Portal `GetData` bypasses the `enabled=1` gate for Good Link/Good News — **FIXED 2026-07-18** (see Remediation Log)
 
 `_action_get_data` returns any record by ID
 (`apps/good_connector/good_connector/api/portal.py:1015-1024`) while the
@@ -182,14 +182,14 @@ can read disabled/unpublished content including `owner`/`modified_by` via
 `doc.as_dict()`. Pre-existing; missed by the prior audit. Remediation:
 reject `enabled != 1` for these two process names in `_action_get_data`.
 
-#### N4. Good Help API leaks staff editor email
+#### N4. Good Help API leaks staff editor email — **FIXED 2026-07-18** (see Remediation Log)
 
 `_build_article_payload` returns `modified_by` (a staff email) and
 `modified` (`apps/good_help/good_help/api.py:185-186`) to any authenticated
 session, including Website Users without Desk access. Neither JS consumer
 reads these fields — dead payload as well. Remediation: drop both fields.
 
-#### N5. MoPi unattended self-certification chain (hardening note)
+#### N5. MoPi unattended self-certification chain (hardening note) — **ACCEPTED, no action** (user decision 2026-07-18: not a bug)
 
 An ordinary `MoPi User` can add themselves to `participants` (module write
 perm), trigger self-study task creation, complete their own task, and the
@@ -198,7 +198,7 @@ decision (MoPi Users retain module editing); reported as hardening only:
 consider restricting participant management on self-study modules to
 `MoPi Manager`.
 
-#### N6. Good Demo Address/Contact creation not fail-closed when demo mode is off
+#### N6. Good Demo Address/Contact creation not fail-closed when demo mode is off — **FIXED 2026-07-18** (see Remediation Log)
 
 `apps/good_demo/good_demo/address_contact.py:24-97` gates only on demo
 identity, never on `is_good_demo_mode()`; `_mark_demo_record` (`:139-143`)
@@ -207,7 +207,7 @@ demo user can create marked records the reset never claims — violates the
 app's documented fail-closed rule. Remediation: `require_good_demo_mode()`
 at the top of both endpoints.
 
-#### N7. Good Demo seed falls back to an arbitrary existing Company
+#### N7. Good Demo seed falls back to an arbitrary existing Company — **FIXED 2026-07-18** (see Remediation Log)
 
 `apps/good_demo/good_demo/seeding.py:321-325`: if creating the `GoodNPO`
 company fails, the seed proceeds against the first Company in the DB and
@@ -215,14 +215,14 @@ company fails, the seed proceeds against the first Company in the DB and
 (`:504-536`, non-resettable). Preconditions: demo mode on + company-creation
 failure on a mixed site. Remediation: `frappe.throw` instead of falling back.
 
-#### N8. Good Demo reset reports attempted deletions as `deleted_records`
+#### N8. Good Demo reset reports attempted deletions as `deleted_records` — **FIXED 2026-07-18** (see Remediation Log)
 
 `apps/good_demo/good_demo/reset.py:156-158` increments the counter
 unconditionally around `_delete_doc_if_possible` (`:335-346`), which
 swallows/logs failures. Cosmetic reporting inaccuracy against the app's own
 contract; rename or count confirmed deletions only.
 
-#### N9. Workflow Visualizer failure dialog renders server messages as HTML
+#### N9. Workflow Visualizer failure dialog renders server messages as HTML — **FIXED 2026-07-18 by escaping** (see Remediation Log)
 
 `workflow_visualizer.js:525-567` joins `_server_messages`/`message` branches
 raw into `frappe.msgprint` (the `exception`/`exc` branches added post-remediation
@@ -233,7 +233,7 @@ call. Recommendation: accept parity explicitly in `DOCUMENTATION.md`, or
 escape (which breaks Frappe's legitimate HTML-link messages). Parity is the
 defensible default.
 
-#### N10. Good Event embed-fragment cache key omits request Host
+#### N10. Good Event embed-fragment cache key omits request Host — **FIXED 2026-07-18** (see Remediation Log)
 
 Cache key is `kind|slug|modified|query` (`apps/good_event/good_event/embed_api.py:99-124`),
 but cached payloads embed absolute URLs resolved via `frappe.utils.get_url()`,
@@ -242,7 +242,7 @@ Host poisons the shared fragment cache for up to 60s (canonical/OG/JSON-LD
 and card hrefs). Native pages unaffected. Remediation: mix the resolved base
 URL into the cache key, or require `seo_public_base_url` before caching.
 
-#### N11. Guest-triggered force delete of draft Payment Requests
+#### N11. Guest-triggered force delete of draft Payment Requests — **FIXED 2026-07-18** (see Remediation Log)
 
 `apps/payrexx_integration/payrexx_integration/api.py:272-284`
 (`_delete_wrong_draft_payment_requests`, called from `api.py:202`): a guest
@@ -254,7 +254,7 @@ same invoice, signed link required); predates the prior audit (introduced
 `ee3d6a0`, 2026-05-03). Remediation: narrow the filter to flow-owned drafts
 or log deletions.
 
-#### N12. Good Newsletter guest confirm link resurrects suppressed subscribers
+#### N12. Good Newsletter guest confirm link resurrects suppressed subscribers — **FIXED 2026-07-18** (see Remediation Log)
 
 The form path refuses to restart opt-in for Bounced/Complained addresses
 (`services/opt_in.py:28-31`), but the confirm-link path has no status guard:
@@ -267,7 +267,7 @@ Actual sending stays blocked by the global-unsubscribe filter
 for `status in ("Bounced", "Complained")`, mirroring the form gate; add a
 regression test.
 
-#### N13-N15. good-event-embed (first audit, standalone repo)
+#### N13-N15. good-event-embed (first audit, standalone repo) — **FIXED 2026-07-18** (see Remediation Log)
 
 - **N13 [Low] WordPress adapter injects upstream title unescaped into
   `<title>`** — `good-event-embed/adapters/wordpress/good-event-embed.php:96-102`;
@@ -332,7 +332,7 @@ payloads for a short TTL (30-60s).
 
 ### P2
 
-#### NB2. good_help sync re-enables operator-disabled mappings every migrate
+#### NB2. good_help sync re-enables operator-disabled mappings every migrate — **FIXED 2026-07-18** (see Remediation Log)
 
 `_upsert_mapping` includes `"is_enabled": 1` in its comparison payload and
 `set_value`s it back when an operator cleared it
@@ -610,15 +610,86 @@ Version bumps: `mopi_app` 16.0.1 → 16.0.2 and `miki_app` 16.0.3 → 16.0.4
 (all declarations in each repo kept in sync). `good-event-embed` declares no
 version (WordPress adapter header stays 1.0.0).
 
-## Suggested Remediation Order (updated)
+## Remediation Log, Round 2 (2026-07-18)
 
-Done this round: N1, N2, NB1, NB3, NB5. Remaining, in original priority:
+Implemented per user instruction; N5 recorded as accepted (not a bug) and
+NB4 deliberately deferred. All changes are in the working trees, not yet
+committed. Each fix shipped with regression tests and a `REQUIREMENTS.md`
+update per the new documentation contract.
 
-1. **N12, N10, N6** — small, well-specified gates with clear regression tests.
-2. **NB2** (good_help `is_enabled`) — align with the documented
-   ownership-preservation contract.
-3. **NB4** (ilanga orphaned images) — pure deletion, immediate repo-size win.
-4. N13-N15 (good-event-embed hardening) — bundle into the same release of
-   that repo once `php tests/run.php` has been executed.
-5. N3, N4, N7, N8, N9 (document-or-escape decision), N11 and the P3 queue
-   at normal priority.
+| Finding | Repo | Fix | Verification |
+|---|---|---|---|
+| N3 | `good_connector` | `_action_get_data` enforces the `enabled=1` gate for Good Link/Good News with a uniform 403 that also covers nonexistent IDs (no existence oracle); all other portal fetch paths traced closed. | Suite green: 168 tests (129+3+36), incl. 4 new contract tests. |
+| N4 | `good_help` | `modified`/`modified_by` dropped from the article payload (consumers re-grepped clean first). | Suite green: 72 tests, incl. new payload-shape test. |
+| NB2 | `good_help` | `is_enabled` is now insert-only in `_upsert_mapping`; operator-disabled mappings survive sync. | Same suite, incl. disabled-preserved and insert-enabled tests. |
+| N6 | `good_demo` | `require_good_demo_mode()` at the top of both Address/Contact endpoints (same error shape as checkout paths). | Suite 85/86 green; the 1 failure is the hrms site issue below, not this fix. |
+| N7 | `good_demo` | Company-creation failure now `frappe.throw`s instead of falling back to an arbitrary existing Company. | Same suite, incl. failure-aborts test. |
+| N8 | `good_demo` | `_delete_doc_if_possible` returns success and only confirmed deletions count toward `deleted_records`; result shape unchanged (no new keys). | Same suite, incl. 2 counting-contract tests. |
+| N9 | `workflow_visualizer` | All failure-dialog message parts (server messages, messages, message, exception branches) are HTML-escaped at one choke point before the `<br>` join; documented deliberate deviation from core `msgprint` parity. | Node suite 11/11 green; Python suite 24 green. |
+| N10 | `good_event` | Resolved `seo.public_base_url()` mixed into the embed-fragment cache key; pinned-config sites keep one stable key (hit rate unaffected). | Unit category 23/23 green, incl. 3 new cache tests. |
+| N11 | `payrexx_integration` | Draft-PR cleanup now ownership-scoped: only `Payrexx-%` gateway drafts owned by the flow's automation user are deleted, each deletion warning-logged. Staff/other-gateway drafts survive. | Suite green: 49 tests, incl. 2 mocked unit tests (zero DB writes — immune to site series state). |
+| N12 | `good_newsletter` | `SUPPRESSED_STATUSES = ("Bounced", "Complained")` guard on the confirm link; refused confirmations render like invalid/expired tokens (410). Unsubscribed consciously still resubscribes via the mailbox-delivered token (fresh consent); already-Confirmed stays idempotent. | Suite green: 146 tests (8+138), incl. 4 new opt-in tests. |
+| N13 | `good-event-embed` | `esc_html()` on the WordPress `filterTitle` value. | `tests/run.php` extended to 31 checks — **not executed (no PHP runtime on this machine)**; syntax lexer-verified only. Run on a PHP 7.4+ host before release. |
+| N14 | `good-event-embed` | https-only `baseUrl` by default (`allowInsecureHttp` opt-in for dev), max 3 redirects, https protocol allowlist on every hop, 2 MB response cap — enforced identically in the curl and fopen transports. | Same PHP caveat. |
+| N15 | `good-event-embed` | Cache dir created `0700`; pre-existing dirs trusted only with matching owner and no group/other perms, otherwise the cache is bypassed entirely (live fetch, no writes). | Same PHP caveat. |
+
+Final working-tree versions after all pending changes: `good_connector`
+16.0.5, `good_help` 16.0.2, `good_demo` 16.0.3, `workflow_visualizer`
+16.0.1, `good_event` 16.2.0, `payrexx_integration` 16.0.1, and
+`good_newsletter` 16.0.3. `good-event-embed` declares no package version.
+
+### Environmental blockers discovered during round-2 verification
+
+**1. NEW (site issue, high priority): `hrms` shadows non_profit's Payment
+Entry override.** `hrms` (16.13.0) was installed on
+`development16.localhost` after `non_profit` (together with the new
+`goodvantage_app`). Frappe resolves duplicate `override_doctype_class`
+registrations by install order — last app wins — so
+`hrms...EmployeePaymentEntry` is the active Payment Entry class and
+`non_profit...NonProfitPaymentEntry` is inert. Proven chain: hrms's
+`set_missing_ref_details` uses erpnext's generic `get_reference_details`,
+which has no Donation branch (returns `outstanding_amount` None), and
+erpnext's `validate` invokes it with `force=True`
+(`payment_entry.py:176`), so the correct row outstanding (e.g. 125) is
+overwritten with None and `validate_allocated_amount` throws "Row #1:
+Allocated Amount cannot be greater than outstanding amount" for **every**
+Donation-referenced Payment Entry. Consequences on this site right now:
+(a) Payment Entry creation against Donations is broken (Desk and checkout
+settlement paths alike); (b) every non_profit Payment Entry safeguard is
+inert — H1 allocation totals, H2 company/account equality, submit-time
+donation row locks, and paid/reconciliation sync hooks. This is also what
+sank the one good_demo test (it creates a PE against a demo donation);
+85/86 good_demo tests pass and the N6-N8 fixes are exonerated. Decision
+required: uninstall hrms, re-order the install, or move non_profit's
+Payment Entry delta from the class override to `doc_events` hooks (fires
+regardless of which class wins).
+
+**2. good_event integration query-bound failure is concurrent-work noise.**
+`test_guest_event_list_query_count_is_bounded_at_full_page` (the L1
+evidence test) fails with 74 > 45 queries against a working tree
+containing ~55 files of unrelated uncommitted good_event changes from
+another session (catalogue/payment work, `BROWSER_QA_FAILURE_AUDIT.md`).
+N10's own coverage (23/23 unit, incl. the 3 new cache-key tests) is green.
+Revalidate the bound after that work lands.
+
+**3. Latent good_demo seed ordering issue (from round-2 debugging).**
+`seeding.py` creates donations with `paid=1` before creating their Payment
+Entry; with outstanding derived from settlement state, the seed's PE
+creation can fail silently (`log_error`) and leave paid-but-unsettled demo
+donations. Suggested follow-up (not done, out of scope): create seed
+donations unpaid and let the PE hooks mark them paid, mirroring
+production.
+
+## Suggested Remediation Order (updated 2026-07-18)
+
+Done in rounds 1-2: N1-N4, N6-N15, NB1, NB2, NB3, NB5. N5 accepted as
+not-a-bug (user decision). NB4 deferred (user decision, kept on record).
+
+1. **hrms/non_profit Payment Entry shadowing** — pick a resolution
+   (uninstall hrms / re-order / hook-based non_profit delta); this blocks
+   live Donation settlement paths, not just a test.
+2. good_demo seed `paid` ordering (blocker note 3 above).
+3. Run `php tests/run.php` (31 checks) for good-event-embed on a PHP host;
+   then N13-N15 are releasable.
+4. The P3 queue (per-app small items) at normal priority. NB4 (ilanga
+   orphaned images) stays deferred per user decision.
