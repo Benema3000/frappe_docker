@@ -82,15 +82,15 @@ remain open. Details in the Remediation Log below.
 
 ## Severity Definitions
 
-| Severity | Meaning |
-|---|---|
-| Critical | Direct privilege escalation, fake settlement, or material accounting failure |
-| High | Significant authorization, financial-integrity, data-exposure, or production-data-loss risk |
-| Medium | Constrained exploit, latent authorization issue, or operational reliability problem |
-| Low | Bounded issue with preconditions that limit real-world impact |
-| P1 bloat | Measured hot-path cost or major maintenance risk |
-| P2 bloat | Significant recurring duplication, N+1 behavior, or shipped dead weight |
-| P3 bloat | Cleanup candidate, cohesion improvement, or minor recurring cost |
+| Severity | Meaning                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------- |
+| Critical | Direct privilege escalation, fake settlement, or material accounting failure                |
+| High     | Significant authorization, financial-integrity, data-exposure, or production-data-loss risk |
+| Medium   | Constrained exploit, latent authorization issue, or operational reliability problem         |
+| Low      | Bounded issue with preconditions that limit real-world impact                               |
+| P1 bloat | Measured hot-path cost or major maintenance risk                                            |
+| P2 bloat | Significant recurring duplication, N+1 behavior, or shipped dead weight                     |
+| P3 bloat | Cleanup candidate, cohesion improvement, or minor recurring cost                            |
 
 ---
 
@@ -98,22 +98,22 @@ remain open. Details in the Remediation Log below.
 
 All register items from the 2026-07-14 audit verified at HEAD on 2026-07-17.
 
-| App | Result |
-|---|---|
-| `good_connector` | H3, H5, M1, M2, B01, B02, B04, B05, B07 all still fixed. B40 shim held for telemetry as documented. |
-| `good_help` | M4 three-layer guard intact (route guard + has_permission + API gate); B09 single global pass intact. |
-| `mopi_app` | H3, H4, H5, B02, B03, B05, B07, B08 all still fixed with regression tests in place. |
-| `barakah_app` | M2 (savepoint + 409), B02, B05, B06/S08, B08 all still fixed. 2026-07-11 items re-verified clean. |
-| `non_profit` | H1, H2, B19, B22, B23, B24 all still fixed; B28 legacy wrappers intact as documented telemetry hold. |
-| `good_npo` | C2, H6, B19, B20, B21, B22, B25, B27 all still fixed; B39 opt-out telemetry hold intact. |
-| `good_demo` | C2 dual-flag gate, H6 trusted-context marking, H7 containment, B20, B22, B26 all still fixed. |
-| `miki_app` | H8, H9, B20, B29-B31, B33, B34, B36, B37 all still fixed; B40 candidates held as documented; S01-S05 deferred per worklist. Prior Administrator-only test gaps closed. |
-| `workflow_visualizer` | B32, B35, B38, S09 still fixed; pre-audit no-oracle 403 hardening holds; O03 native boundary preserved. |
-| `good_event` | C1, H11, L1, B10, B12, B16, B17, B18 all still fixed; S06/S07 improved. B13 remains a documented user decision. |
-| `payrexx_integration` | C3, H12, H13, H14, B21 all still fixed with end-to-end tests. |
-| `good_newsletter` | C1, H10, M3 (strengthened), B11, B14 all still fixed. O01 remains an operational hold (dev site SNS ARN). |
-| `good_analytics` | H7, B15 still fixed; restricted-user RPC tests in place. |
-| `ilanga_app` | No prior findings (excluded from 2026-07-14 audit); B20/B39 items touching it verified resolved on the `good_npo` side. |
+| App                   | Result                                                                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `good_connector`      | H3, H5, M1, M2, B01, B02, B04, B05, B07 all still fixed. B40 shim held for telemetry as documented.                                                                    |
+| `good_help`           | M4 three-layer guard intact (route guard + has_permission + API gate); B09 single global pass intact.                                                                  |
+| `mopi_app`            | H3, H4, H5, B02, B03, B05, B07, B08 all still fixed with regression tests in place.                                                                                    |
+| `barakah_app`         | M2 (savepoint + 409), B02, B05, B06/S08, B08 all still fixed. 2026-07-11 items re-verified clean.                                                                      |
+| `non_profit`          | H1, H2, B19, B22, B23, B24 all still fixed; B28 legacy wrappers intact as documented telemetry hold.                                                                   |
+| `good_npo`            | C2, H6, B19, B20, B21, B22, B25, B27 all still fixed; B39 opt-out telemetry hold intact.                                                                               |
+| `good_demo`           | C2 dual-flag gate, H6 trusted-context marking, H7 containment, B20, B22, B26 all still fixed.                                                                          |
+| `miki_app`            | H8, H9, B20, B29-B31, B33, B34, B36, B37 all still fixed; B40 candidates held as documented; S01-S05 deferred per worklist. Prior Administrator-only test gaps closed. |
+| `workflow_visualizer` | B32, B35, B38, S09 still fixed; pre-audit no-oracle 403 hardening holds; O03 native boundary preserved.                                                                |
+| `good_event`          | C1, H11, L1, B10, B12, B16, B17, B18 all still fixed; S06/S07 improved. B13 remains a documented user decision.                                                        |
+| `payrexx_integration` | C3, H12, H13, H14, B21 all still fixed with end-to-end tests.                                                                                                          |
+| `good_newsletter`     | C1, H10, M3 (strengthened), B11, B14 all still fixed. O01 remains an operational hold (dev site SNS ARN).                                                              |
+| `good_analytics`      | H7, B15 still fixed; restricted-user RPC tests in place.                                                                                                               |
+| `ilanga_app`          | No prior findings (excluded from 2026-07-14 audit); B20/B39 items touching it verified resolved on the `good_npo` side.                                                |
 
 ### Deliberate drift worth recording
 
@@ -573,23 +573,23 @@ audit:
 
 ## Per-App Assessment
 
-| App | Prior findings | New security | New bloat |
-|---|---|---|---|
-| `good_connector` | All still fixed | 1 Low (N3) | 3 P3 |
-| `good_help` | All still fixed | 1 Low (N4) | 1 P2 (NB2), 1 P3 |
-| `mopi_app` | All still fixed | 1 Medium (N1), 1 Low (N5) | 1 P2 (NB3), 3 P3 |
-| `barakah_app` | All still fixed | None | 3 P3 |
-| `non_profit` | All still fixed | None | 1 P3 |
-| `good_npo` | All still fixed | None | 2 P3 |
-| `good_demo` | All still fixed | 3 Low (N6-N8) | 4 P3 |
-| `miki_app` | All still fixed | 1 Medium (N2) | 2 P3 |
-| `ilanga_app` | Fresh audit | None | 1 P2 (NB4), 2 P3 |
-| `workflow_visualizer` | All still fixed | 1 Low (N9, parity) | None |
-| `good_event` | All still fixed | 1 Low (N10) | 2 P3 |
-| `payrexx_integration` | All still fixed | 1 Low (N11) | 1 P3 |
-| `good_newsletter` | All still fixed | 1 Low (N12) | 3 P3 |
-| `good_analytics` | All still fixed | None | 1 P3 |
-| `good-event-embed` | Fresh audit | 3 Low (N13-N15) | 1 P1 (NB1), 1 P2 (NB5), 2 P3 |
+| App                   | Prior findings  | New security              | New bloat                    |
+| --------------------- | --------------- | ------------------------- | ---------------------------- |
+| `good_connector`      | All still fixed | 1 Low (N3)                | 3 P3                         |
+| `good_help`           | All still fixed | 1 Low (N4)                | 1 P2 (NB2), 1 P3             |
+| `mopi_app`            | All still fixed | 1 Medium (N1), 1 Low (N5) | 1 P2 (NB3), 3 P3             |
+| `barakah_app`         | All still fixed | None                      | 3 P3                         |
+| `non_profit`          | All still fixed | None                      | 1 P3                         |
+| `good_npo`            | All still fixed | None                      | 2 P3                         |
+| `good_demo`           | All still fixed | 3 Low (N6-N8)             | 4 P3                         |
+| `miki_app`            | All still fixed | 1 Medium (N2)             | 2 P3                         |
+| `ilanga_app`          | Fresh audit     | None                      | 1 P2 (NB4), 2 P3             |
+| `workflow_visualizer` | All still fixed | 1 Low (N9, parity)        | None                         |
+| `good_event`          | All still fixed | 1 Low (N10)               | 2 P3                         |
+| `payrexx_integration` | All still fixed | 1 Low (N11)               | 1 P3                         |
+| `good_newsletter`     | All still fixed | 1 Low (N12)               | 3 P3                         |
+| `good_analytics`      | All still fixed | None                      | 1 P3                         |
+| `good-event-embed`    | Fresh audit     | 3 Low (N13-N15)           | 1 P1 (NB1), 1 P2 (NB5), 2 P3 |
 
 ## Remediation Log (2026-07-17)
 
@@ -598,13 +598,13 @@ deliberately left as-is. Committed and pushed 2026-07-17: `mopi_app`
 `0ec9b9b`, `miki_app` `b9fe94b`, `good-event-embed` `12164f6` (all
 `main`).
 
-| Finding | Repo | Fix | Verification |
-|---|---|---|---|
-| N1 | `mopi_app` | Escaped all 8 unescaped variable outputs in `templates/print_formats/training_certificate_mopi.html` (both signature texts plus 6 attribute/data outputs); added `--disable-javascript` to the wkhtmltopdf command (`training.py`). New regression test `test_training_certificate_print_format_escapes_signature_text` injects markup at DB level (Frappe's save-time `sanitize_html` already strips `<script>` on Desk/API saves, so the test pins the real residual threat: legacy/direct DB writes) and renders through the production `_build_training_certificate_html`. | Full suite green: 114 tests (106 + 7 + 1, one expected skip), incl. the new test; `--disable-javascript` pinned in the existing wkhtmltopdf mock. |
-| N2 | `miki_app` | Removed `"System Manager"` from `MIKI_CASE_RESTRICTED_ROLES` and added an explicit System Manager early-exit in `_requires_miki_scope` (`permission.py`), exempting SM on all doctypes in any role combination — a constant-only fix would not have covered the shipped Admin profile (SM + Accounts Manager + MiKi roles). MiKi-role-only users remain row-scoped (existing test `test_miki_roles_only_see_case_issues_and_linked_case_invoices` still passes). AGENTS.md Cases section and DOCUMENTATION.md updated. | Full suite green: 332 tests (320 + 12), incl. new `test_system_manager_only_user_reads_non_case_issue` and `test_system_manager_only_user_reads_unlinked_sales_invoice`. (The first full run reported 1 transient error, not reproducible on the clean rerun.) |
-| NB3 | `mopi_app` | `_count_participants_for_modules` and `_count_certificates_ready_to_send` rewritten as single set-based query-builder COUNT queries; unbounded `visible_module_names` load removed; module count via `get_permission_aware_count`. Response payload unchanged. Semantics note: the participant counts enumerate all modules behind the doctype-read gate — revisit if row-level permission conditions are ever registered for MoPi Training Module. | New tests: fixture-delta count correctness + `assertQueryCount(2)` bound (`tests/test_dashboard.py`); green in the 114-test suite above. |
-| NB1 | `good-event-embed` | `ok:false` payloads are now cached with a new optional `negativeCacheTtl` (default 60s); positive-cache behavior byte-identical. | Tests written in `tests/run.php` but **not executed — no PHP runtime on this machine**; PHP syntax verified via a structural lexer check only. Run `php tests/run.php` (PHP 7.4+) before shipping. |
-| NB5 | `good-event-embed` | The 10 upstream catalogue params (`page, q, from, to, region, regions, audience_segments, categories, category, catalog_stream`) are whitelist-forwarded from the host `$_GET` (scalar values only) and included in the cache key. Upstream confirmed to parse plural params as comma-separated scalars and to emit relative `?key=value` fragment links, so embedded pagination/filtering now reloads through the host. Added optional `httpTransport` constructor injection for the test harness. README.md and AGENTS.md updated. | Same PHP caveat as NB1. |
+| Finding | Repo               | Fix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Verification                                                                                                                                                                                                                                                   |
+| ------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| N1      | `mopi_app`         | Escaped all 8 unescaped variable outputs in `templates/print_formats/training_certificate_mopi.html` (both signature texts plus 6 attribute/data outputs); added `--disable-javascript` to the wkhtmltopdf command (`training.py`). New regression test `test_training_certificate_print_format_escapes_signature_text` injects markup at DB level (Frappe's save-time `sanitize_html` already strips `<script>` on Desk/API saves, so the test pins the real residual threat: legacy/direct DB writes) and renders through the production `_build_training_certificate_html`. | Full suite green: 114 tests (106 + 7 + 1, one expected skip), incl. the new test; `--disable-javascript` pinned in the existing wkhtmltopdf mock.                                                                                                              |
+| N2      | `miki_app`         | Removed `"System Manager"` from `MIKI_CASE_RESTRICTED_ROLES` and added an explicit System Manager early-exit in `_requires_miki_scope` (`permission.py`), exempting SM on all doctypes in any role combination — a constant-only fix would not have covered the shipped Admin profile (SM + Accounts Manager + MiKi roles). MiKi-role-only users remain row-scoped (existing test `test_miki_roles_only_see_case_issues_and_linked_case_invoices` still passes). AGENTS.md Cases section and DOCUMENTATION.md updated.                                                         | Full suite green: 332 tests (320 + 12), incl. new `test_system_manager_only_user_reads_non_case_issue` and `test_system_manager_only_user_reads_unlinked_sales_invoice`. (The first full run reported 1 transient error, not reproducible on the clean rerun.) |
+| NB3     | `mopi_app`         | `_count_participants_for_modules` and `_count_certificates_ready_to_send` rewritten as single set-based query-builder COUNT queries; unbounded `visible_module_names` load removed; module count via `get_permission_aware_count`. Response payload unchanged. Semantics note: the participant counts enumerate all modules behind the doctype-read gate — revisit if row-level permission conditions are ever registered for MoPi Training Module.                                                                                                                            | New tests: fixture-delta count correctness + `assertQueryCount(2)` bound (`tests/test_dashboard.py`); green in the 114-test suite above.                                                                                                                       |
+| NB1     | `good-event-embed` | `ok:false` payloads are now cached with a new optional `negativeCacheTtl` (default 60s); positive-cache behavior byte-identical.                                                                                                                                                                                                                                                                                                                                                                                                                                               | Tests written in `tests/run.php` but **not executed — no PHP runtime on this machine**; PHP syntax verified via a structural lexer check only. Run `php tests/run.php` (PHP 7.4+) before shipping.                                                             |
+| NB5     | `good-event-embed` | The 10 upstream catalogue params (`page, q, from, to, region, regions, audience_segments, categories, category, catalog_stream`) are whitelist-forwarded from the host `$_GET` (scalar values only) and included in the cache key. Upstream confirmed to parse plural params as comma-separated scalars and to emit relative `?key=value` fragment links, so embedded pagination/filtering now reloads through the host. Added optional `httpTransport` constructor injection for the test harness. README.md and AGENTS.md updated.                                           | Same PHP caveat as NB1.                                                                                                                                                                                                                                        |
 
 Version bumps: `mopi_app` 16.0.1 → 16.0.2 and `miki_app` 16.0.3 → 16.0.4
 (all declarations in each repo kept in sync). `good-event-embed` declares no
@@ -613,56 +613,67 @@ version (WordPress adapter header stays 1.0.0).
 ## Remediation Log, Round 2 (2026-07-18)
 
 Implemented per user instruction; N5 recorded as accepted (not a bug) and
-NB4 deliberately deferred. All changes are in the working trees, not yet
-committed. Each fix shipped with regression tests and a `REQUIREMENTS.md`
-update per the new documentation contract.
+NB4 deliberately deferred. Each fix shipped with regression tests and a
+`REQUIREMENTS.md` update per the new documentation contract. Final UAT
+follow-ups were audited, committed, and pushed on 2026-07-19: `good_event`
+`37d3860`, `miki_app` `ed1d9dc`, and `non_profit` `1ad8e3a`.
 
-| Finding | Repo | Fix | Verification |
-|---|---|---|---|
-| N3 | `good_connector` | `_action_get_data` enforces the `enabled=1` gate for Good Link/Good News with a uniform 403 that also covers nonexistent IDs (no existence oracle); all other portal fetch paths traced closed. | Suite green: 168 tests (129+3+36), incl. 4 new contract tests. |
-| N4 | `good_help` | `modified`/`modified_by` dropped from the article payload (consumers re-grepped clean first). | Suite green: 72 tests, incl. new payload-shape test. |
-| NB2 | `good_help` | `is_enabled` is now insert-only in `_upsert_mapping`; operator-disabled mappings survive sync. | Same suite, incl. disabled-preserved and insert-enabled tests. |
-| N6 | `good_demo` | `require_good_demo_mode()` at the top of both Address/Contact endpoints (same error shape as checkout paths). | Suite 85/86 green; the 1 failure is the hrms site issue below, not this fix. |
-| N7 | `good_demo` | Company-creation failure now `frappe.throw`s instead of falling back to an arbitrary existing Company. | Same suite, incl. failure-aborts test. |
-| N8 | `good_demo` | `_delete_doc_if_possible` returns success and only confirmed deletions count toward `deleted_records`; result shape unchanged (no new keys). | Same suite, incl. 2 counting-contract tests. |
-| N9 | `workflow_visualizer` | All failure-dialog message parts (server messages, messages, message, exception branches) are HTML-escaped at one choke point before the `<br>` join; documented deliberate deviation from core `msgprint` parity. | Node suite 11/11 green; Python suite 24 green. |
-| N10 | `good_event` | Resolved `seo.public_base_url()` mixed into the embed-fragment cache key; pinned-config sites keep one stable key (hit rate unaffected). | Unit category 23/23 green, incl. 3 new cache tests. |
-| N11 | `payrexx_integration` | Draft-PR cleanup now ownership-scoped: only `Payrexx-%` gateway drafts owned by the flow's automation user are deleted, each deletion warning-logged. Staff/other-gateway drafts survive. | Suite green: 49 tests, incl. 2 mocked unit tests (zero DB writes — immune to site series state). |
-| N12 | `good_newsletter` | `SUPPRESSED_STATUSES = ("Bounced", "Complained")` guard on the confirm link; refused confirmations render like invalid/expired tokens (410). Unsubscribed consciously still resubscribes via the mailbox-delivered token (fresh consent); already-Confirmed stays idempotent. | Suite green: 146 tests (8+138), incl. 4 new opt-in tests. |
-| N13 | `good-event-embed` | `esc_html()` on the WordPress `filterTitle` value. | `tests/run.php` extended to 31 checks — **not executed (no PHP runtime on this machine)**; syntax lexer-verified only. Run on a PHP 7.4+ host before release. |
-| N14 | `good-event-embed` | https-only `baseUrl` by default (`allowInsecureHttp` opt-in for dev), max 3 redirects, https protocol allowlist on every hop, 2 MB response cap — enforced identically in the curl and fopen transports. | Same PHP caveat. |
-| N15 | `good-event-embed` | Cache dir created `0700`; pre-existing dirs trusted only with matching owner and no group/other perms, otherwise the cache is bypassed entirely (live fetch, no writes). | Same PHP caveat. |
+| Finding | Repo                  | Fix                                                                                                                                                                                                                                                                           | Verification                                                                                                                                                  |
+| ------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| N3      | `good_connector`      | `_action_get_data` enforces the `enabled=1` gate for Good Link/Good News with a uniform 403 that also covers nonexistent IDs (no existence oracle); all other portal fetch paths traced closed.                                                                               | Suite green: 168 tests (129+3+36), incl. 4 new contract tests.                                                                                                |
+| N4      | `good_help`           | `modified`/`modified_by` dropped from the article payload (consumers re-grepped clean first).                                                                                                                                                                                 | Suite green: 72 tests, incl. new payload-shape test.                                                                                                          |
+| NB2     | `good_help`           | `is_enabled` is now insert-only in `_upsert_mapping`; operator-disabled mappings survive sync.                                                                                                                                                                                | Same suite, incl. disabled-preserved and insert-enabled tests.                                                                                                |
+| N6      | `good_demo`           | `require_good_demo_mode()` at the top of both Address/Contact endpoints (same error shape as checkout paths).                                                                                                                                                                 | Suite 85/86 green; the 1 failure is the hrms site issue below, not this fix.                                                                                  |
+| N7      | `good_demo`           | Company-creation failure now `frappe.throw`s instead of falling back to an arbitrary existing Company.                                                                                                                                                                        | Same suite, incl. failure-aborts test.                                                                                                                        |
+| N8      | `good_demo`           | `_delete_doc_if_possible` returns success and only confirmed deletions count toward `deleted_records`; result shape unchanged (no new keys).                                                                                                                                  | Same suite, incl. 2 counting-contract tests.                                                                                                                  |
+| N9      | `workflow_visualizer` | All failure-dialog message parts (server messages, messages, message, exception branches) are HTML-escaped at one choke point before the `<br>` join; documented deliberate deviation from core `msgprint` parity.                                                            | Node suite 11/11 green; Python suite 24 green.                                                                                                                |
+| N10     | `good_event`          | Resolved `seo.public_base_url()` mixed into the embed-fragment cache key; pinned-config sites keep one stable key (hit rate unaffected).                                                                                                                                      | Unit category 23/23 green, incl. 3 new cache tests.                                                                                                           |
+| N11     | `payrexx_integration` | Draft-PR cleanup now ownership-scoped: only `Payrexx-%` gateway drafts owned by the flow's automation user are deleted, each deletion warning-logged. Staff/other-gateway drafts survive.                                                                                     | Suite green: 49 tests, incl. 2 mocked unit tests (zero DB writes — immune to site series state).                                                              |
+| N12     | `good_newsletter`     | `SUPPRESSED_STATUSES = ("Bounced", "Complained")` guard on the confirm link; refused confirmations render like invalid/expired tokens (410). Unsubscribed consciously still resubscribes via the mailbox-delivered token (fresh consent); already-Confirmed stays idempotent. | Suite green: 146 tests (8+138), incl. 4 new opt-in tests.                                                                                                     |
+| N13     | `good-event-embed`    | `esc_html()` on the WordPress `filterTitle` value.                                                                                                                                                                                                                            | `tests/run.php` extended to 31 checks — **not executed (no PHP runtime on this machine)**; syntax lexer-verified only. Run on a PHP 7.4+ host before release. |
+| N14     | `good-event-embed`    | https-only `baseUrl` by default (`allowInsecureHttp` opt-in for dev), max 3 redirects, https protocol allowlist on every hop, 2 MB response cap — enforced identically in the curl and fopen transports.                                                                      | Same PHP caveat.                                                                                                                                              |
+| N15     | `good-event-embed`    | Cache dir created `0700`; pre-existing dirs trusted only with matching owner and no group/other perms, otherwise the cache is bypassed entirely (live fetch, no writes).                                                                                                      | Same PHP caveat.                                                                                                                                              |
 
-Final working-tree versions after all pending changes: `good_connector`
+Final released versions after the UAT follow-ups: `good_connector`
 16.0.5, `good_help` 16.0.2, `good_demo` 16.0.3, `workflow_visualizer`
-16.0.1, `good_event` 16.2.0, `payrexx_integration` 16.0.1, and
-`good_newsletter` 16.0.3. `good-event-embed` declares no package version.
+16.0.1, `good_event` 16.2.1, `miki_app` 16.2.1, `non_profit` 16.1.2,
+`payrexx_integration` 16.0.1, and `good_newsletter` 16.0.3.
+`good-event-embed` declares no package version.
 
 ### Environmental blockers discovered during round-2 verification
 
-**1. NEW (site issue, high priority): `hrms` shadows non_profit's Payment
-Entry override.** `hrms` (16.13.0) was installed on
-`development16.localhost` after `non_profit` (together with the new
-`goodvantage_app`). Frappe resolves duplicate `override_doctype_class`
-registrations by install order — last app wins — so
-`hrms...EmployeePaymentEntry` is the active Payment Entry class and
-`non_profit...NonProfitPaymentEntry` is inert. Proven chain: hrms's
-`set_missing_ref_details` uses erpnext's generic `get_reference_details`,
-which has no Donation branch (returns `outstanding_amount` None), and
-erpnext's `validate` invokes it with `force=True`
-(`payment_entry.py:176`), so the correct row outstanding (e.g. 125) is
-overwritten with None and `validate_allocated_amount` throws "Row #1:
-Allocated Amount cannot be greater than outstanding amount" for **every**
-Donation-referenced Payment Entry. Consequences on this site right now:
-(a) Payment Entry creation against Donations is broken (Desk and checkout
-settlement paths alike); (b) every non_profit Payment Entry safeguard is
-inert — H1 allocation totals, H2 company/account equality, submit-time
-donation row locks, and paid/reconciliation sync hooks. This is also what
-sank the one good_demo test (it creates a PE against a demo donation);
-85/86 good_demo tests pass and the N6-N8 fixes are exonerated. Decision
-required: uninstall hrms, re-order the install, or move non_profit's
-Payment Entry delta from the class override to `doc_events` hooks (fires
-regardless of which class wins).
+**1. hrms shadowing of non_profit's Payment Entry override — RESOLVED
+2026-07-18 (user decision: hook-based design).** `hrms` (16.13.0) was
+installed on `development16.localhost` after `non_profit`, so hrms's
+`EmployeePaymentEntry` won the duplicate `override_doctype_class`
+resolution (last app wins) and `NonProfitPaymentEntry` was inert —
+breaking every Donation-referenced Payment Entry and disabling the H1/H2
+safeguards. Resolution: non_profit's Payment Entry delta moved from the
+class override to `doc_events` hooks (`before_validate`, `validate`,
+`on_submit`, `on_cancel`, `on_change` — fire regardless of the winning
+controller), and Donation now
+carries maintained read-only `grand_total` (= `amount`) and `advance_paid`
+(= submitted allocation) fields mirroring Sales Invoice semantics, so
+erpnext's generic `get_reference_details` computes the correct outstanding
+under ANY controller class (`set_missing_ref_details(force=True)` can no
+longer zero it). A versioned backfill patch populated both fields for
+existing Donations. The Payment Entry key was removed from
+`override_doctype_class` (Bank Transaction override retained); the class
+remains as an import-compatible shell. non_profit 16.1.1 → 16.1.2.
+Verification: non_profit 74 + 35 tests green (2 expected skips), good_demo
+87 green, good_npo 82 green (1 skip) — including new hook-contract tests
+for the exact broken path, mirror-field maintenance on submit/cancel, H1
+over-allocation and H2 cross-company rejections, and the backfill patch.
+The final audit added the `before_validate` company guard because HRMS can
+otherwise fail while resolving a cross-company reference before ordinary
+`validate` doc-events run; the focused 23-test Donation module passed under
+the active HRMS controller.
+Two environment repairs were needed alongside: doc_events handlers must
+take `(doc, method=None)` (bench convention) — three initial 1-arg
+handlers TypeError'd — and the site's hrms installation had never run
+`make_fixtures`, so standard Leave Types (`Casual Leave`, …) were missing
+and broke ERPNext's test-record generator; seeded via
+`hrms.setup.make_fixtures`.
 
 **2. good_event integration query-bound failure is concurrent-work noise.**
 `test_guest_event_list_query_count_is_bounded_at_full_page` (the L1
@@ -672,24 +683,23 @@ another session (catalogue/payment work, `BROWSER_QA_FAILURE_AUDIT.md`).
 N10's own coverage (23/23 unit, incl. the 3 new cache-key tests) is green.
 Revalidate the bound after that work lands.
 
-**3. Latent good_demo seed ordering issue (from round-2 debugging).**
-`seeding.py` creates donations with `paid=1` before creating their Payment
-Entry; with outstanding derived from settlement state, the seed's PE
-creation can fail silently (`log_error`) and leave paid-but-unsettled demo
-donations. Suggested follow-up (not done, out of scope): create seed
-donations unpaid and let the PE hooks mark them paid, mirroring
-production.
+**3. Latent good_demo seed ordering issue — moot under the new mirror
+fields.** `seeding.py` creates donations with `paid=1` before creating
+their Payment Entry. Under the resolved design, outstanding comes from
+`grand_total − advance_paid` (not the `paid` flag), so a pre-paid donation
+with no allocations still yields full outstanding and PE creation works.
+No code change needed; recorded for the record.
 
 ## Suggested Remediation Order (updated 2026-07-18)
 
-Done in rounds 1-2: N1-N4, N6-N15, NB1, NB2, NB3, NB5. N5 accepted as
-not-a-bug (user decision). NB4 deferred (user decision, kept on record).
+Done in rounds 1-2: N1-N4, N6-N15, NB1, NB2, NB3, NB5, plus the hrms
+Payment Entry shadowing (hook-based redesign). N5 accepted as not-a-bug
+(user decision). NB4 deferred (user decision, kept on record).
 
-1. **hrms/non_profit Payment Entry shadowing** — pick a resolution
-   (uninstall hrms / re-order / hook-based non_profit delta); this blocks
-   live Donation settlement paths, not just a test.
-2. good_demo seed `paid` ordering (blocker note 3 above).
-3. Run `php tests/run.php` (31 checks) for good-event-embed on a PHP host;
+1. ~~hrms/non_profit Payment Entry shadowing~~ — resolved 2026-07-18 via
+   the hook-based redesign and Donation `grand_total`/`advance_paid`
+   mirrors (non_profit 16.1.2); all three affected suites green.
+2. Run `php tests/run.php` (31 checks) for good-event-embed on a PHP host;
    then N13-N15 are releasable.
-4. The P3 queue (per-app small items) at normal priority. NB4 (ilanga
+3. The P3 queue (per-app small items) at normal priority. NB4 (ilanga
    orphaned images) stays deferred per user decision.
