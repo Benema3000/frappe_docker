@@ -105,6 +105,8 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`good_help`](frappe-bench/apps/good_help/AGENTS.md) | Embedded Desk help center backed by Frappe Wiki | `wiki` | Syncs `fixtures/help/<app>/` Markdown into Wiki Documents |
 | [`mopi_app`](frappe-bench/apps/mopi_app/AGENTS.md) | Training modules, certificates, task campaigns, employee groups | `erpnext`, `good_connector`, `good_help` | Innermost dir is `mopiapp/` (mismatch — `frappe.scrub("MoPiApp")`) |
 | [`barakah_app`](frappe-bench/apps/barakah_app/AGENTS.md) | Aqeeqa / Well charity order workflows, daily reminders | `erpnext`, `good_connector`, `good_help` | |
+| [`good_mel`](frappe-bench/apps/good_mel/AGENTS.md) | Generic NGO Partner onboarding, proposal/Project lifecycle, finance coordination, and monitoring, evaluation, and learning | `erpnext`, `good_connector`, `good_help` | Branch in use: `version-16`; product 1.0 maps to package `16.1.x` |
+| [`barakah_mel`](frappe-bench/apps/barakah_mel/AGENTS.md) | Swiss Barakah Charity configuration and vertical workflows over GoodMEL | `good_mel` | Separate from `barakah_app`; no Aqeeqa/Well dependency initially |
 | [`non_profit`](frappe-bench/apps/non_profit/AGENTS.md) | Hard fork of Frappe's `non_profit` (OpenNGO-Project). Shared membership + major-gifts substrate (Member, Membership, Donation, Donor, Major Gift, Donor Interaction, …) | `erpnext` | Branch in use: `version-16` (`miki-dev` merged in). B2B (`Membership.customer`) and B2C (`Membership.member`) coexist |
 | [`good_npo`](frappe-bench/apps/good_npo/AGENTS.md) | Generic Goodvantage NPO Desk / public presentation layer | `non_profit`, `good_connector`, `payrexx_integration`, `good_help` | Keep reusable; no ilanga, Miki, or demo-only assumptions |
 | [`good_demo`](frappe-bench/apps/good_demo/AGENTS.md) | Public demo shell — signup, temporary users, reset/seed routines | `good_npo`, `good_connector`, `good_help` | Reset only data marked as demo seed/demo user |
@@ -117,6 +119,7 @@ guidance. Read app-local `AGENTS.md` when present; otherwise use the app's
 | [`good_newsletter`](frappe-bench/apps/good_newsletter/AGENTS.md) | Newsletter campaigning (Mailchimp-lite) — campaigns to Email Groups via AWS SES, RFC 8058 unsubscribe, SNS bounce/complaint suppression, delivery stats | `good_connector`, `good_help` | Own per-recipient Email Queue builder (core bulk path can't do per-recipient headers/merge); MJML content via `mjml-python`; GrapesJS designer planned (v0.4) |
 | [`good_analytics`](frappe-bench/apps/good_analytics/AGENTS.md) | Apteco-style fundraising analytics — RFM donor scoring, static/dynamic donor segments, fixed-threshold dashboards (Desk page is app home), newsletter audience provider | `non_profit`, `good_connector`, `good_help` | Branch in use: `version-16`. Gate-then-aggregate model (checks Donation read, then aggregates system-wide); feeds `good_newsletter` audiences (inert without it) |
 | [`goodvantage_app`](frappe-bench/apps/goodvantage_app/AGENTS.md) | Goodvantage customisations on top of vanilla ERPNext and HRMS | `erpnext`, `hrms` | Product layer; no dependencies on other Goodvantage apps |
+| [`rheumaliga_app`](frappe-bench/apps/rheumaliga_app/AGENTS.md) | Rheumaliga-specific integrations; planned Tarif 595 invoice generation and optional MediData eTG transport | (standalone) | Documentation-first scaffold; no production billing integration yet |
 
 > **Naming confusion — route by doctype, not by name.** `miki_app` and
 > `mopi_app` are two **different** apps in this bench. The user often says
@@ -153,9 +156,14 @@ payments        (standalone — upstream; never patch)
 
 good_event      (required_apps = ["payrexx_integration", "good_connector", "good_help"])
 
+good_mel        (required_apps = ["erpnext", "good_connector", "good_help"])
+    └── barakah_mel (required_apps = ["good_mel"])
+
 good_newsletter (required_apps = ["good_connector", "good_help"])
 
 goodvantage_app (required_apps = ["erpnext", "hrms"])
+
+rheumaliga_app  (standalone; Tarif 595/eTG implementation planned)
 ```
 
 ### Cross-cutting patterns to be aware of
