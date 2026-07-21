@@ -1,0 +1,735 @@
+{
+    "type": "goodvantage-translations",
+    "formatVersion": 1,
+    "_readme": [
+        "Edit the texts under \"translations\". Keep the labels and the file structure unchanged.",
+        "Texts with several lines are written as a list; every list entry is one line.",
+        "Save the file as UTF-8 and import it again on the translations page of the Hub.",
+        "Labels or languages that are missing from this file remain unchanged on import."
+    ],
+    "ngoId": "8",
+    "scope": "process",
+    "processDefinitionId": "7",
+    "exportedAt": "2026-07-20T05:21:22+02:00",
+    "languages": [
+        "de",
+        "fr",
+        "it"
+    ],
+    "translations": [
+        {
+            "label": "Accounts",
+            "format": "text",
+            "translations": {
+                "de": "",
+                "fr": "",
+                "it": ""
+            }
+        },
+        {
+            "label": "FinishProcess",
+            "format": "text",
+            "translations": {
+                "de": "Zurück",
+                "fr": "Retour",
+                "it": "Indietro"
+            }
+        },
+        {
+            "label": "ProcessEingesendetText-deklaration",
+            "format": "text",
+            "translations": {
+                "de": [
+                    "Wir danken Ihnen für die Einreichung Ihrer Angaben.",
+                    ""
+                ],
+                "fr": "Nous vous remercions pour la transmission de vos informations.",
+                "it": "La ringraziamo per averci inviato i suoi dati."
+            }
+        },
+        {
+            "label": "ProcessEingesendetTitel-deklaration",
+            "format": "text",
+            "translations": {
+                "de": "Vielen Dank!",
+                "fr": "Merci beaucoup !",
+                "it": "Grazie mille!"
+            }
+        },
+        {
+            "label": "adressanpassung",
+            "format": "text",
+            "translations": {
+                "de": "Adressanpassung",
+                "fr": [
+                    "Adaptation de l’adresse",
+                    ""
+                ],
+                "it": "Modifica dell’indirizzo"
+            }
+        },
+        {
+            "label": "adressanpassungBetriebInfotext",
+            "format": "markdown",
+            "translations": {
+                "de": [
+                    "Bitte teilen Sie uns hier allfällige Adresskorrekturen mit. Sie können die bei uns gespeicherten Angaben einfach überschreiben.",
+                    "",
+                    "**Adresse Trägerschaft**",
+                    "",
+                    "Nachfolgende Adresse ist bei uns gespeichert:"
+                ],
+                "fr": [
+                    "Veuillez nous communiquer ici d’éventuelles corrections d’adresse. Vous pouvez modifier vous-même l’adresse que vous avez enregistrée.",
+                    "",
+                    "**Adresse de l’organisme responsable**",
+                    "",
+                    "L’adresse suivante est enregistrée chez nous :"
+                ],
+                "it": [
+                    "La preghiamo di comunicarci eventuali correzioni dell’indirizzo qui: per farlo, può semplicemente sostituire l’indirizzo registrato.",
+                    "",
+                    "**Indirizzo dell’ente gestore**",
+                    "",
+                    "Ecco l’indirizzo registrato presso kibesuisse:"
+                ]
+            }
+        },
+        {
+            "label": "adressanpassungKontaktInfotext",
+            "format": "markdown",
+            "translations": {
+                "de": [
+                    "**Kontaktperson für Deklaration**",
+                    "",
+                    "Hier können Sie die Angaben einer Kontaktperson für die Deklaration hinterlegen. Wenn es keine spezifische Kontaktperson gibt, lassen Sie die Felder leer. Wir kontaktieren Sie dann über die bei der Trägerschaft hinterlegte E-Mail-Adresse.",
+                    ""
+                ],
+                "fr": [
+                    "**Personne de contact pour la déclaration**",
+                    "",
+                    "Vous pouvez enregistrer ici les informations d’une personne de contact pour la déclaration. S’il n’existe pas de personne de contact spécifique, laissez les champs vides. Nous vous contacterons alors via l’adresse e-mail enregistrée pour l’organisme responsable.",
+                    ""
+                ],
+                "it": [
+                    "**Persona di contatto per la dichiarazione**",
+                    "",
+                    "Qui è possibile inserire i dati di una persona di contatto per la dichiarazione. Se non c'è una persona di contatto specifica può lasciare i campi vuoti: vi contatteremo tramite l'indirizzo e-mail memorizzato dell’ente gestore."
+                ]
+            }
+        },
+        {
+            "label": "adressanpassungRechnungsadresseInfotext",
+            "format": "markdown",
+            "translations": {
+                "de": [
+                    "**Rechnungsadresse**",
+                    "",
+                    "Wir werden die Rechnung via E-Mail versenden.",
+                    "",
+                    "Falls es eine spezifische Rechnungsadresse gibt oder die Rechnung an eine separate E-Mail-Adresse gesendet werden soll, bitten wir Sie, die nachstehenden Felder auszufüllen. Wenn es keine spezifische Rechnungsadresse gibt, lassen Sie die Felder leer. Wir versenden die Rechnung dann an die bei der Trägerschaft hinterlegte E-Mail-Adresse.",
+                    ""
+                ],
+                "fr": [
+                    "**Adresse de facturation**",
+                    "",
+                    "Nous enverrons la facture par e-mail.",
+                    "",
+                    "S’il existe une adresse de facturation spécifique ou si la facture doit être envoyée à une adresse e-mail séparée, nous vous prions de remplir les champs ci-dessous. S’il n’existe pas d’adresse de facturation spécifique, laissez les champs vides. Nous enverrons alors la facture à l’adresse e-mail enregistrée pour l’organisme responsable."
+                ],
+                "it": [
+                    "**Indirizzo di fatturazione**",
+                    "",
+                    "Le invieremo la fattura tramite e-mail.",
+                    "",
+                    "Se esiste un indirizzo di fatturazione specifico o se la fattura deve essere inviata a un indirizzo e-mail separato, la preghiamo di compilare i campi sottostanti. Se non esiste un indirizzo di fatturazione specifico può invece lasciare i campi vuoti. La fattura verrà inviata all’indirizzo e-mail dell’ente gestore."
+                ]
+            }
+        },
+        {
+            "label": "back",
+            "format": "text",
+            "translations": {
+                "de": "Zurück",
+                "fr": "Retour",
+                "it": "Indietro"
+            }
+        },
+        {
+            "label": "kita_slots_declared",
+            "format": "text",
+            "translations": {
+                "de": "Betreuungsplätze Kindertagesstätte {{$Accounts[$id][\"business_name\"]}}",
+                "fr": "Places d’accueil en crèche {{$Accounts[$id][\"business_name\"]}}",
+                "it": "Nidi d’infanzia: posti di accoglienza {{$Accounts[$id][\"business_name\"]}}"
+            }
+        },
+        {
+            "label": "seb_slots_declared",
+            "format": "text",
+            "translations": {
+                "de": "Betreuungsplätze Schulergänzende Betreuung {{$Accounts[$id][\"business_name\"]}}",
+                "fr": "Places d’accueil en accueil parascolaire {{$Accounts[$id][\"business_name\"]}}",
+                "it": "Centri extrascolastici: posti di accoglienza {{$Accounts[$id][\"business_name\"]}}"
+            }
+        },
+        {
+            "label": "tfo_hours_declared",
+            "format": "text",
+            "translations": {
+                "de": "Betreuungsstunden Tagesfamilie {{$Accounts[$id][\"business_name\"]}}",
+                "fr": "Heures d’accueil en accueil en famille de jour {{$Accounts[$id][\"business_name\"]}}",
+                "it": "Famiglie diurne: ore di accoglienza {{$Accounts[$id][\"business_name\"]}}"
+            }
+        },
+        {
+            "label": "deviation_justification",
+            "format": "text",
+            "translations": {
+                "de": "Bitte schreiben Sie hier eine Begründung, falls es grössere Abweichungen in den Betreuungsplätzen und/oder Betreuungsstunden gibt.",
+                "fr": "Veuillez indiquer ici une justification s’il existe des écarts importants concernant les places d’accueil et/ou les heures d’accueil.",
+                "it": "Se ci sono grandi differenze nei posti disponibili e/o nelle ore di accoglienza, la preghiamo di scriverne qui il motivo."
+            }
+        },
+        {
+            "label": "business_email_declared",
+            "format": "text",
+            "translations": {
+                "de": "E-Mail-Adresse der Trägerschaft (allgemeine Informationen werden an diese E-Mail-Adresse gesendet)",
+                "fr": "Adresse e-mail de l’organisme responsable (les informations générales sont envoyées à cette adresse e-mail)",
+                "it": "Indirizzo e-mail dell’ente gestore (le informazioni generali saranno inviate a questo indirizzo email)"
+            }
+        },
+        {
+            "label": "business_legal_form_declared",
+            "format": "text",
+            "translations": {
+                "de": "Rechtsform der Trägerschaft",
+                "fr": "Forme juridique de l’organisme responsable",
+                "it": "Forma giuridica dell’ente gestore"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-AG",
+            "format": "text",
+            "translations": {
+                "de": "AG",
+                "fr": "SA",
+                "it": "SA"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-Einfache Gesellschaft",
+            "format": "text",
+            "translations": {
+                "de": "Einfache Gesellschaft",
+                "fr": "Société simple",
+                "it": "Società semplice"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-Einzelfirma",
+            "format": "text",
+            "translations": {
+                "de": "Einzelfirma",
+                "fr": "Entreprise individuelle",
+                "it": "Ditta individuale"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-Genossenschaft",
+            "format": "text",
+            "translations": {
+                "de": "Genossenschaft",
+                "fr": "Société coopérative",
+                "it": "Società cooperativa"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-GmbH",
+            "format": "text",
+            "translations": {
+                "de": "GmbH",
+                "fr": "Sàrl",
+                "it": "Sagl"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-Kollektivgesellschaft",
+            "format": "text",
+            "translations": {
+                "de": "Kollektivgesellschaft",
+                "fr": "Société en nom collectif",
+                "it": "Società in nome collettivo"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-Kommanditgesellschaft",
+            "format": "text",
+            "translations": {
+                "de": "Kommanditgesellschaft",
+                "fr": "Société en commandite",
+                "it": "Società in accomandita"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-Stiftung",
+            "format": "text",
+            "translations": {
+                "de": "Stiftung",
+                "fr": "Fondation",
+                "it": "Fondazione"
+            }
+        },
+        {
+            "label": "business_legal_form_declared-Verein",
+            "format": "text",
+            "translations": {
+                "de": "Verein",
+                "fr": "Association",
+                "it": "Associazione"
+            }
+        },
+        {
+            "label": "business_name_declared",
+            "format": "text",
+            "translations": {
+                "de": "Name der Trägerschaft",
+                "fr": "Nom de l’organisme responsable",
+                "it": "Nome dell’ente gestore"
+            }
+        },
+        {
+            "label": "business_name_additional_declared",
+            "format": "text",
+            "translations": {
+                "de": "Name der Trägerschaft: Zusatz",
+                "fr": "Nom de l’organisme responsable : complément ",
+                "it": "Nome dell’ente gestore: complemento"
+            }
+        },
+        {
+            "label": "business_city_declared",
+            "format": "text",
+            "translations": {
+                "de": "Ortschaft",
+                "fr": "Localité",
+                "it": "Luogo"
+            }
+        },
+        {
+            "label": "business_country_declared",
+            "format": "text",
+            "translations": {
+                "de": "Land",
+                "fr": "Pays",
+                "it": "Paese"
+            }
+        },
+        {
+            "label": "business_postal_code_declared",
+            "format": "text",
+            "translations": {
+                "de": "PLZ",
+                "fr": "NPA",
+                "it": "CAP"
+            }
+        },
+        {
+            "label": "business_pob_declared",
+            "format": "text",
+            "translations": {
+                "de": "Postfach",
+                "fr": "Case postale",
+                "it": "Casella postale"
+            }
+        },
+        {
+            "label": "business_street_declared",
+            "format": "text",
+            "translations": {
+                "de": "Strasse und Hausnummer",
+                "fr": "Rue et numéro",
+                "it": "Via e numero"
+            }
+        },
+        {
+            "label": "business_phone_declared",
+            "format": "text",
+            "translations": {
+                "de": "Telefonnummer der Trägerschaft (Format: +41 12 345 67 89)",
+                "fr": "N° de téléphone de l’organisme responsable (format: +41 12 345 67 89)",
+                "it": "Numero di telefono dell’ente gestore (formato: +41 12 345 67 89)"
+            }
+        },
+        {
+            "label": "business_uid_declared",
+            "format": "text",
+            "translations": {
+                "de": "Unternehmens-Identifikationsnummer der Trägerschaft",
+                "fr": "Numéro d’identification des entreprises IDE de l’organisme responsable",
+                "it": "Numero d’identificazione dell’ente gestore"
+            }
+        },
+        {
+            "label": "contact_email_declared",
+            "format": "text",
+            "translations": {
+                "de": "E-Mail-Adresse der Kontaktperson",
+                "fr": "Adresse e-mail de la personne de contact",
+                "it": "Indirizzo e-mail della persona di contatto"
+            }
+        },
+        {
+            "label": "contact_last_name_declared",
+            "format": "text",
+            "translations": {
+                "de": "Nachname der Kontaktperson",
+                "fr": "Nom de la personne de contact",
+                "it": "Cognome della persona di contatto"
+            }
+        },
+        {
+            "label": "contact_first_name_declared",
+            "format": "text",
+            "translations": {
+                "de": "Vorname der Kontaktperson",
+                "fr": "Prénom de la personne de contact",
+                "it": "Nome della persona di contatto"
+            }
+        },
+        {
+            "label": "billing_country_declared",
+            "format": "text",
+            "translations": {
+                "de": "Rechnungsadresse: Land",
+                "fr": "Adresse de facturation : pays",
+                "it": "Indirizzo di fatturazione: paese"
+            }
+        },
+        {
+            "label": "billing_email_declared",
+            "format": "text",
+            "translations": {
+                "de": "E-Mail-Adresse für Rechnungen",
+                "fr": "Adresse de facturation : adresse e-mail",
+                "it": "Indirizzo di fatturazione: indirizzo e-mail"
+            }
+        },
+        {
+            "label": "billing_name_declared",
+            "format": "text",
+            "translations": {
+                "de": "Rechnungsadresse: Name",
+                "fr": "Adresse de facturation : nom",
+                "it": "Indirizzo di fatturazione: nome"
+            }
+        },
+        {
+            "label": "billing_city_declared",
+            "format": "text",
+            "translations": {
+                "de": "Rechnungsadresse: Ortschaft",
+                "fr": "Adresse de facturation : localité",
+                "it": "Indirizzo di fatturazione: luogo"
+            }
+        },
+        {
+            "label": "billing_postal_code_declared",
+            "format": "text",
+            "translations": {
+                "de": "Rechnungsadresse: PLZ",
+                "fr": "Adresse de facturation : NPA",
+                "it": "Indirizzo di fatturazione: CAP"
+            }
+        },
+        {
+            "label": "billing_pob_declared",
+            "format": "text",
+            "translations": {
+                "de": "Rechnungsadresse: Postfach",
+                "fr": "Adresse de facturation : case postale",
+                "it": "Indirizzo di fatturazione: casella postale"
+            }
+        },
+        {
+            "label": "billing_street_declared",
+            "format": "text",
+            "translations": {
+                "de": "Rechnungsadresse: Strasse",
+                "fr": "Adresse de facturation : rue",
+                "it": "Indirizzo di fatturazione: via"
+            }
+        },
+        {
+            "label": "billing_use_separate_declared",
+            "format": "text",
+            "translations": {
+                "de": "Die Rechnungsadresse unterscheidet sich von der bei der Trägerschaft erfassten Adresse.",
+                "fr": "L’adresse de facturation diffère de l’adresse enregistrée pour l’organisme responsable.",
+                "it": "L’indirizzo di fatturazione è diverso dall’indirizzo registrato presso l’ente gestore."
+            }
+        },
+        {
+            "label": "billing_name_additional_declared",
+            "format": "text",
+            "translations": {
+                "de": "Rechnungsadresse: Zusatzzeile",
+                "fr": "Adresse de facturation : ligne complémentaire",
+                "it": "Indirizzo di fatturazione: complemento"
+            }
+        },
+        {
+            "label": "deklaration",
+            "format": "text",
+            "translations": {
+                "de": "Deklaration",
+                "fr": [
+                    "Déclaration",
+                    ""
+                ],
+                "it": "Dichiarazione"
+            }
+        },
+        {
+            "label": "einsenden",
+            "format": "markdown",
+            "translations": {
+                "de": "Wir danken Ihnen für die Einreichung Ihrer Daten.",
+                "fr": "Nous vous remercions pour la transmission de vos informations.",
+                "it": "La ringraziamo per averci inviato i suoi dati."
+            }
+        },
+        {
+            "label": "endingProcess",
+            "format": "text",
+            "translations": {
+                "de": "Deklaration wird eingereicht",
+                "fr": "La déclaration est envoyée",
+                "it": "La dichiarazione è stata inviata"
+            }
+        },
+        {
+            "label": "forward",
+            "format": "text",
+            "translations": {
+                "de": "Weiter",
+                "fr": "Suivant",
+                "it": "Avanti"
+            }
+        },
+        {
+            "label": "completeness_confirmed",
+            "format": "text",
+            "translations": {
+                "de": "Ich bestätige hiermit, dass die obenstehenden Angaben wahrheitsgetreu ausgefüllt sind, und dass wir zusätzliche Betriebe, welche noch nicht in der Liste waren, im Textfeld ergänzt haben.",
+                "fr": "Je confirme que les informations ci-dessus ont été saisies de manière conforme à la vérité et que les structures supplémentaires qui ne figuraient pas encore dans la liste ont été ajoutées dans le champ de texte.",
+                "it": "Confermo che le informazioni sopra riportate sono corrette e che sono state aggiunte nel campo di testo le strutture nuove che non erano ancora registrate nell’elenco."
+            }
+        },
+        {
+            "label": "organization_comment",
+            "format": "text",
+            "translations": {
+                "de": "Geschlossene oder weitere Betriebe inkl. Betreuungsform sowie Betreuungsplätze resp. Betreuungsstunden:",
+                "fr": "Structures ayant été ouvertes ou fermées, avec indication du type d’accueil ainsi que du nombre de places d’accueil et / ou des heures d’accueil.",
+                "it": "Strutture che sono state aperte o chiuse (indicare anche la forma di accoglienza e i posti e/o le ore di accoglienza)"
+            }
+        },
+        {
+            "label": "business_name",
+            "format": "text",
+            "translations": {
+                "de": "Name des Betriebs",
+                "fr": "Nom de la structure",
+                "it": "Nome della struttura"
+            }
+        },
+        {
+            "label": "kita_visible",
+            "format": "text",
+            "translations": {
+                "de": "",
+                "fr": "",
+                "it": ""
+            }
+        },
+        {
+            "label": "contact_will_be_updated",
+            "format": "text",
+            "translations": {
+                "de": "Wir möchten die Kontaktperson anpassen",
+                "fr": "Nous souhaitons mettre à jour la personne de contact",
+                "it": "Vogliamo aggiornare la persona di contatto"
+            }
+        },
+        {
+            "label": "mandatoryFieldIsEmpty",
+            "format": "text",
+            "translations": {
+                "de": "Bitte füllen Sie alle mit * gekennzeichneten Felder aus.",
+                "fr": "Veuillez remplir tous les champs marqués d’un astérisque (*).",
+                "it": "La preghiamo di compilare tutti i campi contrassegnati con *."
+            }
+        },
+        {
+            "label": "name",
+            "format": "text",
+            "translations": {
+                "de": "Name",
+                "fr": "Nom",
+                "it": "Nome"
+            }
+        },
+        {
+            "label": "nichtBestaetigt",
+            "format": "text",
+            "translations": {
+                "de": "Bitte bestätigen Sie die Richtigkeit der gemachten Angaben, um weiterfahren zu können.",
+                "fr": "Veuillez confirmer l’exactitude des informations fournies afin de pouvoir continuer.",
+                "it": "La preghiamo di confermare la correttezza dei dati inseriti per poter proseguire."
+            }
+        },
+        {
+            "label": "okay",
+            "format": "text",
+            "translations": {
+                "de": "Abschliessen",
+                "fr": "Finaliser",
+                "it": "Conferma"
+            }
+        },
+        {
+            "label": "seb_visible",
+            "format": "text",
+            "translations": {
+                "de": "",
+                "fr": "",
+                "it": ""
+            }
+        },
+        {
+            "label": "selbstdeklaration",
+            "format": "text",
+            "translations": {
+                "de": "Deklaration 2026",
+                "fr": "Déclaration 2026",
+                "it": "Dichiarazione 2026"
+            }
+        },
+        {
+            "label": "selbstdeklarationText",
+            "format": "markdown",
+            "translations": {
+                "de": [
+                    "**Angaben zu Betreuungsplätzen und/oder Betreuungsstunden in Ihrer Trägerschaft**",
+                    "",
+                    "Der Mitgliederbeitrag setzt sich aus einem fixen und einem variablen Teil zusammen. Um die variablen Beiträge korrekt berechnen zu können, benötigen wir aktuelle Angaben und bitten Sie, diese im nachfolgenden Formular wie folgt zu erfassen: ",
+                    "",
+                    "- Für jeden Kita-Betrieb die Anzahl der per Ende 2025 bewilligten Betreuungsplätze (gemäss Betriebsbewilligung)",
+                    "",
+                    "- Für jede schulergänzende Betreuungseinrichtung die Anzahl der per Ende 2025 bewilligten Betreuungsplätze (falls es keine Bewilligung gibt, zählen die angebotenen Betreuungsplätze) ",
+                    "",
+                    "- Für Betriebe mit Tagesfamilienbetreuung die Gesamtzahl der im Jahr 2025 abgerechneten Betreuungsstunden ",
+                    "",
+                    "Falls vorhanden, sind die Vorjahreswerte hinterlegt. Bitte prüfen Sie diese und aktualisieren Sie sie bei Bedarf.",
+                    "",
+                    "Das gültige Mitgliederbeitragsreglement können Sie **[hier](https://www.kibesuisse.ch/fileadmin/Dateiablage/kibesuisse_Dokumente/2026_Mitgliederbeitragsreglement_DE.pdf)** einsehen.  "
+                ],
+                "fr": [
+                    "**Informations sur les places et/ou les heures d’accueil dans votre organisme responsable**",
+                    "",
+                    "La cotisation des membre se compose d’une part fixe et d’une part variable. Afin de pouvoir calculer correctement la part variable, nous avons besoin d’informations actualisées et vous prions de les saisir dans le formulaire ci-dessous comme suit ",
+                    "",
+                    "- pour chaque crèche, le nombre de places d’accueil autorisées fin 2025 (conformément à l’autorisation)",
+                    "",
+                    "- pour chaque structure d’accueil parascolaire, le nombre de places d’accueil autorisées à fin 2025 (s’il n’y a pas d’autorisation, compter les places d’accueil proposées)",
+                    "",
+                    "- pour les structures d’accueil familial de jour, le nombre total d’heures d’accueil facturées en 2025",
+                    "",
+                    "Le cas échéant, les valeurs de l’année précédente sont enregistrées. Veuillez les vérifier et les actualiser si nécessaire. ",
+                    "",
+                    "Vous pouvez consulter [ici](https://www.kibesuisse.ch/fileadmin/Dateiablage/kibesuisse_Dokumente/Dokumente_franz%C3%B6sisch/2026_Reglement_cotisations_membres_FR.pdf) le règlement de cotisation des membres en vigueur."
+                ],
+                "it": [
+                    "**Dati relativi ai posti e/o alle ore di accoglienza nel suo ente gestore**",
+                    "",
+                    "La quota di affiliazione è composta da un importo fisso e una quota variabile. Per poter calcolare correttamente le quote variabili, abbiamo bisogno di dati aggiornati. La preghiamo di inserirli nel seguente modulo come segue:",
+                    "",
+                    "- Per ogni nido d’infanzia, il numero di posti di accoglienza autorizzati alla fine del 2025 (conformemente all’autorizzazione)",
+                    "",
+                    "- Per ogni centro extrascolastico, il numero di posti di accoglienza autorizzati alla fine del 2025 (se non è presente un’autorizzazione, vengono conteggiati i posti di accoglienza messi a disposizione)",
+                    "",
+                    "- Per ogni famiglia diurna, il numero totale di ore di accoglienza fatturate nel 2025",
+                    "",
+                    "Se disponibili, sono riportati i valori dell’anno precedente. La preghiamo di verificarli e di aggiornarli se necessario.",
+                    "",
+                    "Può consultare il regolamento relativo alle quote di affiliazione [qui](https://www.kibesuisse.ch/fileadmin/Dateiablage/kibesuisse_Dokumente/Dokumente_italienisch/2026_Quote_di_affiliazione_IT.pdf).",
+                    ""
+                ]
+            }
+        },
+        {
+            "label": "submit",
+            "format": "text",
+            "translations": {
+                "de": "Einsenden",
+                "fr": "Envoyer",
+                "it": "Inviare "
+            }
+        },
+        {
+            "label": "tfo_visible",
+            "format": "text",
+            "translations": {
+                "de": "",
+                "fr": "",
+                "it": ""
+            }
+        },
+        {
+            "label": "wegleitung",
+            "format": "text",
+            "translations": {
+                "de": "Angaben zur Mitgliedschaft",
+                "fr": "Informations relatives à l’adhésion",
+                "it": "Informazioni relative all’affiliazione"
+            }
+        },
+        {
+            "label": "wegleitungText",
+            "format": "markdown",
+            "translations": {
+                "de": [
+                    "Für die Erstellung der korrekten Rechnungen für den Mitgliederbeitrag sind wir auf Ihre Unterstützung angewiesen. Wir bitten Sie, nachfolgend Ihre Angaben zu erfassen. ",
+                    "",
+                    "Sollten Sie Hilfe benötigen, melden Sie sich bitte unter +41 44 212 24 44 oder info@kibesuisse.ch. Wir helfen Ihnen gerne weiter. ",
+                    ""
+                ],
+                "fr": [
+                    "Afin d’établir correctement les factures de cotisation des membres, nous avons besoin de votre collaboration. Nous vous prions de saisir ci-dessous les informations demandées. ",
+                    "",
+                    "Si vous avez besoin d’aide, veuillez nous contacter au +41 44 212 24 44 ou à l’adresse info@kibesuisse.ch. Nous nous tenons volontiers à votre disposition."
+                ],
+                "it": [
+                    "Abbiamo bisogno del vostro aiuto per poter emettere correttamente le fatture relative alle quote di affiliazione. Vi preghiamo di inserire i vostri dati qui di seguito. ",
+                    "",
+                    "Se avete bisogno di aiuto, contattateci al numero +41 44 212 24 44 o all’indirizzo info@kibesuisse.ch: saremo lieti di aiutarvi."
+                ]
+            }
+        },
+        {
+            "label": "weitereBetriebeText",
+            "format": "text",
+            "translations": {
+                "de": [
+                    "Falls Betriebe in Ihrer Trägerschaft eröffnet oder geschlossen wurden, bitten wir Sie, uns entsprechend zu informieren, damit wir diese Anpassungen vornehmen können. ",
+                    "",
+                    "Bitte führen Sie die Namen der Betriebe inkl. Betreuungsplätzen (Kita, schulergänzende Betreuung) sowie Betreuungsstunden (Tagesfamilienbetreuung) auf."
+                ],
+                "fr": "Si des structures relevant de votre organisme responsable ont été ouvertes ou fermées, nous vous prions de nous en informer afin que nous puissions procéder aux adaptations nécessaires. Veuillez indiquer le nom des structures, le nombre de places d’accueil (accueil de jour, accueil parascolaire) ainsi que les heures d’accueil (accueil en famille de jour).",
+                "it": "Se il suo ente gestore ha aperto o chiuso una struttura, la preghiamo di comunicarcelo affinché possiamo registrare le modifiche necessarie. La preghiamo di indicare il nome della struttura, compresi i posti di accoglienza (nidi d’infanzia e centri extrascolastici) o le ore di accoglienza (famiglie diurne)."
+            }
+        }
+    ]
+}
