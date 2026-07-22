@@ -252,7 +252,8 @@ into a current release report without a new run.
 | Good Event capacity overflow and real Waitlisted draft creation                                  | [`test_e2e_playwright.py`](frappe-bench/apps/good_event/good_event/tests/test_e2e_playwright.py), [`test_event_status.py`](frappe-bench/apps/good_event/good_event/tests/test_event_status.py)           | Hosted five-confirmed/two-waitlisted, cancellation, capacity release, and promotion matrix passed by 2026-07-21. |
 | Good Event linked venue translation on detail/registration/list rendering                        | [`test_language_contract.py`](frappe-bench/apps/good_event/good_event/tests/test_language_contract.py), [`test_e2e_playwright.py`](frappe-bench/apps/good_event/good_event/tests/test_e2e_playwright.py) | Hosted DE/FR/IT catalogue/detail/registration visual and route checks passed by 2026-07-21. |
 | MiKi canonical portal fields, archived field limits, normalization, non-persistence on rejection | [`test_portal_field_contract.py`](frappe-bench/apps/miki_app/miki_app/tests/test_portal_field_contract.py), [`test_e2e_playwright.py`](frappe-bench/apps/miki_app/miki_app/tests/test_e2e_playwright.py) | Hosted 12-positive plus three expected-negative matrix complete by 2026-07-21. Fix `b092307`/16.5.4 passed all 39 hosted-QA server tests and all 11 portal-user synchronization tests locally. Post-deploy shared-role run `KIBE-E2E-20260722-5c29198f` passed the complete lifecycle and exact cleanup with fixture stabilization disabled. |
-| MiKi workflow, correspondence queue, invoice, QR SVG, Dunning, portal files                      | [`test_end_to_end.py`](frappe-bench/apps/miki_app/miki_app/tests/test_end_to_end.py), [`test_e2e_playwright.py`](frappe-bench/apps/miki_app/miki_app/tests/test_e2e_playwright.py)                       | All 12 positive hosted scenarios completed portal, review, invoice, Reminder/Dunning 1/Dunning 2, payment, closure, and exact cleanup. Hosted hub file-wrapper and recipient inbox opening remain separate external checks. |
+| MiKi workflow, correspondence queue, invoice, QR SVG, Dunning, portal files                      | [`test_end_to_end.py`](frappe-bench/apps/miki_app/miki_app/tests/test_end_to_end.py), [`test_e2e_playwright.py`](frappe-bench/apps/miki_app/miki_app/tests/test_e2e_playwright.py)                       | All 12 positive hosted scenarios completed portal, review, invoice, Reminder/Dunning 1/Dunning 2, payment, closure, and exact cleanup. Identity-preserving run `KIBE-E2E-20260722-828480dd` additionally passed direct and hosted-wrapper PDF downloads after invoice and again after payment in one portal session, then deleted 37 exact records. `/rest/filelist` remained stale at both checkpoints because of its 20-minute token cache; direct `GetFileList` and all exact-file/download paths passed. |
+| Good Event Payrexx checkout                                                                     | [`test_payrexx_settings.py`](frappe-bench/apps/payrexx_integration/payrexx_integration/payrexx_integration/doctype/payrexx_settings/test_payrexx_settings.py)                                           | Sandbox checkout preflight on 2026-07-22 created the required CHF gateway-account bridge and Good Event invoice. It exposed a GET transaction defect: the provider Gateway was created while local submission/checkout metadata rolled back, leaving one Draft Payment Request and one Queued Integration Request without a recoverable URL. Local fix targets `payrexx_integration` 16.0.2 and all 49 integration tests pass; hosted retest remains pending deployment and exact failed-attempt cleanup. |
 | MiKi per-declaration escalation rollback when correspondence fails                               | [`test_end_to_end.py`](frappe-bench/apps/miki_app/miki_app/tests/test_end_to_end.py)                                                                                                                     | Focused server regression and record-scoped hosted request/reminder progression passed; failed correspondence remains atomic by server contract. |
 
 The local browser commands represented above are:
@@ -442,8 +443,10 @@ env/bin/python -m miki_app.tests.hosted_browser_qa --mode preflight
   contains `portal`, `invoice`, and `payment`. This keeps the declaration Contact
   email unchanged, retains the authenticated self-service browser page, and
   verifies direct `GetFileList` / `GetFiles` / `GetFileUrls` plus the hosted
-  file-list, file metadata, file-URL, and byte-download wrappers immediately
-  after invoice creation and again after normal payment closure.
+  file metadata, file-URL, and byte-download wrappers immediately after invoice
+  creation and again after normal payment closure. Record `/rest/filelist`
+  separately because the hub caches it for 20 minutes by portal token and can
+  remain stale after a generated invoice becomes visible through direct APIs.
 
 The exhaustive matrix has 12 positive scenarios across DE/FR/IT and one, two,
 or three account rows, plus three negative scenarios with no declaration
@@ -477,9 +480,10 @@ Review` or the expected immediate auto-advance state.
    the next stage. Queue creation alone is not delivery evidence.
 9. For identity-preserving file acceptance, use the same portal browser session
    before and after accounting transitions. Require the exact private invoice
-   PDF from the direct Frappe actions and `/rest/filelist`, `/rest/files`,
-   `/rest/file-urls`, and the returned `download=1` proxy both after invoice
-   creation and after payment closes the declaration.
+   PDF from the direct Frappe actions and `/rest/files`, `/rest/file-urls`, and
+   the returned `download=1` proxy both after invoice creation and after payment
+   closes the declaration. Record a stale `/rest/filelist` response as a hub
+   cache condition rather than treating it as direct Frappe visibility failure.
 
 Request/reminder correspondence uses the original declaration Contact. Final
 confirmation uses the synchronized declaration Contact. Invoice, reminder, and
