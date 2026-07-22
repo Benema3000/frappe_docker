@@ -405,6 +405,8 @@ MIKI_HOSTED_QA_EMAILS_JSON
 MIKI_HOSTED_QA_ALLOW_MUTATIONS
 MIKI_HOSTED_QA_PORTAL_LOGIN_URL
 MIKI_HOSTED_QA_PORTAL_ALLOWED_HOSTS
+MIKI_HOSTED_QA_PRESERVE_PORTAL_IDENTITY
+MIKI_HOSTED_QA_VERIFY_FILE_BOUNDARY
 ```
 
 The runner defaults to the exact allowlisted HTTPS target
@@ -436,6 +438,12 @@ env/bin/python -m miki_app.tests.hosted_browser_qa --mode preflight
 - Cleanup validates ownership before mutation, cancels accounting records in
   reverse order, removes only run-owned side effects, and preserves reused
   Users. A broad developer cleanup helper is not acceptable on shared UAT.
+- Set both file-boundary flags to `1` only for a single runner invocation that
+  contains `portal`, `invoice`, and `payment`. This keeps the declaration Contact
+  email unchanged, retains the authenticated self-service browser page, and
+  verifies direct `GetFileList` / `GetFiles` / `GetFileUrls` plus the hosted
+  file-list, file metadata, file-URL, and byte-download wrappers immediately
+  after invoice creation and again after normal payment closure.
 
 The exhaustive matrix has 12 positive scenarios across DE/FR/IT and one, two,
 or three account rows, plus three negative scenarios with no declaration
@@ -467,6 +475,11 @@ Review` or the expected immediate auto-advance state.
    invoice address, private PDF, QR content, and exact recipients.
 8. For receivables, require each Email Queue row to reach `Sent` before advancing
    the next stage. Queue creation alone is not delivery evidence.
+9. For identity-preserving file acceptance, use the same portal browser session
+   before and after accounting transitions. Require the exact private invoice
+   PDF from the direct Frappe actions and `/rest/filelist`, `/rest/files`,
+   `/rest/file-urls`, and the returned `download=1` proxy both after invoice
+   creation and after payment closes the declaration.
 
 Request/reminder correspondence uses the original declaration Contact. Final
 confirmation uses the synchronized declaration Contact. Invoice, reminder, and
