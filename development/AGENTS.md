@@ -689,6 +689,146 @@ user is restored via `try/finally`.
 
 ---
 
+## Docker UAT And Production Operations
+
+When helping operate Docker-based Frappe/ERPNext v16 stacks, give complete,
+directly executable commands. Do not give abstract instructions unless
+necessary.
+
+### General rules
+
+- Run long installs/updates inside tmux.
+- Never run the whole installer with sudo.
+- Use `bash install_frappe.sh ...`; the installer invokes sudo for Docker when
+  needed.
+- The installer automatically loads `.env` from its own directory.
+- Do not print or embed actual tokens in commands.
+- Private Git URLs must keep escaped placeholders such as
+  `\${SPENDEDIREKT_GITHUB_TOKEN}`.
+- Use `--custom-app` with the complete app list when changing an app branch or
+  replacing the app list.
+- Use no custom-app flags for simple updates when `apps.json` is already
+  correct.
+- `--custom-app-stage` appends apps; do not use it to replace an existing app
+  with a different branch.
+- Use `--skip-post-start-build` when assets are built into the image.
+- Omit `--skip-post-start-build` for the first HRMS deployment because HRMS
+  needs the post-start asset build.
+- Never combine `--skip-post-start-build` with `--skip-image-assets`,
+  `--sequential-app-install`, or `--low-resource-build` unless using
+  `--use-existing-image`.
+- Never recommend `docker volume prune`.
+- Safe cleanup commands are `docker builder prune -af`,
+  `docker image prune -f`, and `docker container prune -f`.
+- Manual Docker Compose commands must include `generated-bind-volumes.yaml`.
+- Use site name `frontend` unless the user says otherwise.
+- Current ERPNext version is `v16.28.0`.
+- New tested `frappe_docker` ref is
+  `c004361e790125ed13aaa933d11f7838711a8960`.
+- The installer default may still use the older ref, so pass the new ref
+  explicitly where required.
+
+### Token environment variables
+
+- `SPENDEDIREKT_GITHUB_TOKEN` for `SpendeDirekt/*`.
+- `GOODVANTAGE_GITHUB_TOKEN` for `Goodvantage/*`.
+- Values are stored single-quoted in `.env`.
+- The server installer must support these placeholders. The updated installer
+  expands them only during Git checks/builds while preserving placeholders in
+  `apps.json`.
+
+### Server and stack details
+
+Kibe development:
+
+- SSH: `lkm@100.86.237.127`
+- Installer: `/home/lkm/docker/install_frappe.sh`
+- Environment: `/home/lkm/docker/.env`
+- Project: `kibe-dev`
+- Install root: `/home/lkm/docker`
+- Site: `frontend`
+- Port: `3002`
+- Backend container: `kibe-dev-backend-1`
+
+Demo:
+
+- Same server as Kibe development.
+- Project: `demo`
+- Port: `3003`
+- Backend container: `demo-backend-1`
+
+Admin/Goodvantage internal:
+
+- Same server as Kibe development.
+- Project: `admin`
+- Port: `3005`
+- Backend container: `admin-backend-1`
+- Apps: HRMS `version-16`, Goodvantage `goodvantage_app` `main`.
+- Omit `--skip-post-start-build` on the first HRMS deployment.
+
+Ilanga test:
+
+- SSH: `lkm@100.95.169.61`
+- Project: `ilanga-test`
+- Install root: `/home/lkm/docker`
+- Site: `frontend`
+- Port: `3004`
+- Backend container: `ilanga-test-backend-1`
+
+Kibe production:
+
+- Log in as root on host `kibesuisse`.
+- Project: `kibe-prod`
+- Install root: `/root`
+- Stack directory: `/root/kibe-prod`
+- Site: `frontend`
+- Port: `8082`
+- Domain: `https://kibe.goodvantage.cloud`
+- Backend container: `kibe-prod-backend-1`
+- Custom image: `kibe-prod:v16`
+- Temporary swap: `/swap-kibe-prod.img`
+- This host needs 8 GiB swap for the complete Kibe image build.
+- Use `--min-swap-gb 8 --swap-file /swap-kibe-prod.img`.
+- Do not use `--cleanup-unused-swap` while that swap is needed.
+- A prior all-at-once build was killed by OOM during `bench build`.
+
+### Canonical Kibe app list
+
+- `https://github.com/frappe/payments.git,version-16,payments`
+- `https://github.com/OpenNGO-Project/non_profit.git,version-16,non_profit`
+- `https://github.com/frappe/wiki.git,version-3,wiki`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/good_connector.git,main,good_connector`
+- `https://x-access-token:\${GOODVANTAGE_GITHUB_TOKEN}@github.com/Goodvantage/payrexx_integration.git,version-16,payrexx_integration`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/good_help.git,main,good_help`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/good_event.git,main,good_event`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/good_newsletter.git,main,good_newsletter`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/miki_app.git,main,miki_app`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/workflow_visualizer.git,version-16,workflow_visualizer`
+
+### Canonical Ilanga additions
+
+- `https://github.com/frappe/builder.git,develop,builder`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/good_npo.git,main,good_npo`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/good_analytics.git,version-16,good_analytics`
+- `https://x-access-token:\${SPENDEDIREKT_GITHUB_TOKEN}@github.com/SpendeDirekt/ilanga_app.git,main,ilanga_app`
+
+### Command style
+
+- Start with `tmux new -s <descriptive-name>`.
+- Include the correct `cd`, project name, install root, version, and flags.
+- For bench commands, use
+  `sudo docker exec -it <backend-container> bench --site frontend <command>`.
+- Root production hosts do not need sudo for Docker.
+- After updates, include `bench --site frontend list-apps` and a curl check.
+- If an operation fails, first request the exact log tail and check whether an
+  installer/build process is still running.
+- If the user asks for a command and the target stack is clear, provide the
+  command directly without repeating background information.
+- If the target stack, domain, or port is ambiguous, ask one short
+  clarification question.
+
+---
+
 ## Commands
 
 Browser and end-to-end test policy, suite inventory, and commands are in
