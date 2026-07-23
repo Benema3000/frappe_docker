@@ -138,7 +138,8 @@ Run these from `frappe-bench` with `bench execute`, not `bench run-tests`:
 | Good Event     | `good_event.tests.test_e2e_playwright.run`    | Native registration, private/organization cases, coupon, mobile, persistence, pre-event package                                                                                       |
 | Good Demo      | `good_demo.tests.test_e2e_playwright.run`     | Signup, membership, donation, dummy checkout, email queue, mobile Desk/help                                                                                                           |
 | Good NPO       | `good_npo.tests.test_e2e_playwright.run`      | Delegates to the Good Demo flow                                                                                                                                                       |
-| Good Connector | `good_connector.tests.real_hub_user_flow.run` | Real email, hub navigation evidence, and direct portal submissions across MoPi, Barakah, and MiKi; it does not assert authenticated hub content                                       |
+| Good Connector | `good_connector.tests.real_hub_user_flow.run` | Legacy real-email navigation and direct portal submissions across MoPi, Barakah, and MiKi; it does not assert authenticated hub content and is not release evidence                 |
+| Good Connector | `python -m good_connector.tests.hosted_auth_qa --mode full` | Strict real-email, Frappe token-contract, and identity-bound hosted `/rest/session` proof; run with the bench virtualenv and protected environment variables                         |
 
 Good Event and Good Demo can start a local server when needed. The other
 consumer runners expect `FRAPPE_URL` to be reachable. Existing MoPi, Barakah,
@@ -192,6 +193,50 @@ fallback can synthesize a login token when sent-message MIME is unavailable,
 and its browser helper records only URL/title/screenshot after navigation. A
 green run is therefore not proof of delivered email body content or an
 authenticated hosted-hub session.
+
+Use `good_connector.tests.hosted_auth_qa` for strict authentication evidence.
+`--mode full` signs into the deployed Frappe site, requests the normal guest
+login endpoint, and accepts only a newly retained `Sent` Email Queue addressed
+to the controlled identity. `--mode authenticate` accepts a magic link copied
+from the operator-controlled inbox and does not require Frappe Desk credentials.
+Both modes validate the exact HTTPS Frappe/portal host allowlists, link query
+shape, NGO, Frappe token response, and identity returned by the hosted
+`/rest/session`; HTTP 200 without the expected identity fails. The result file
+contains only a recipient hash and redacted booleans/record names, uses mode
+`0600`, and rejects credentials, JWTs, magic links, cookies, and query-bearing
+URLs before persistence.
+
+Run from `frappe-bench` with its virtualenv. Supply values through a protected
+process environment, never command arguments or tracked files:
+
+```bash
+set +x
+
+GOOD_CONNECTOR_HOSTED_QA_FRAPPE_URL=https://<frappe-host> \
+GOOD_CONNECTOR_HOSTED_QA_FRAPPE_ALLOWED_HOSTS=<frappe-host> \
+GOOD_CONNECTOR_HOSTED_QA_PORTAL_URL=https://<portal-host> \
+GOOD_CONNECTOR_HOSTED_QA_PORTAL_ALLOWED_HOSTS=<portal-host> \
+GOOD_CONNECTOR_HOSTED_QA_RUN_ID=GC-AUTH-E2E-YYYYMMDD-<random> \
+GOOD_CONNECTOR_HOSTED_QA_EMAIL="${GOOD_CONNECTOR_CONTROLLED_EMAIL}" \
+GOOD_CONNECTOR_HOSTED_QA_NGO=<ngo-id> \
+GOOD_CONNECTOR_HOSTED_QA_USER="${GOOD_CONNECTOR_HOSTED_USER}" \
+GOOD_CONNECTOR_HOSTED_QA_PASSWORD="${GOOD_CONNECTOR_HOSTED_PASSWORD}" \
+./env/bin/python -m good_connector.tests.hosted_auth_qa --mode full
+
+GOOD_CONNECTOR_HOSTED_QA_FRAPPE_URL=https://<frappe-host> \
+GOOD_CONNECTOR_HOSTED_QA_FRAPPE_ALLOWED_HOSTS=<frappe-host> \
+GOOD_CONNECTOR_HOSTED_QA_PORTAL_URL=https://<portal-host> \
+GOOD_CONNECTOR_HOSTED_QA_PORTAL_ALLOWED_HOSTS=<portal-host> \
+GOOD_CONNECTOR_HOSTED_QA_RUN_ID=GC-AUTH-E2E-YYYYMMDD-<random> \
+GOOD_CONNECTOR_HOSTED_QA_EMAIL="${GOOD_CONNECTOR_CONTROLLED_EMAIL}" \
+GOOD_CONNECTOR_HOSTED_QA_NGO=<ngo-id> \
+GOOD_CONNECTOR_HOSTED_QA_LOGIN_URL="${GOOD_CONNECTOR_INBOX_LOGIN_URL}" \
+./env/bin/python -m good_connector.tests.hosted_auth_qa --mode authenticate
+```
+
+Keep shell tracing disabled for the whole invocation. The runner removes
+Playwright's `DEBUG` and `PWDEBUG` variables inside its process before opening
+the secret-bearing URL, so API debug logging cannot print the magic link.
 
 MoPi, Barakah, and MiKi share
 `apps/good_connector/good_connector/tests/browser_harness.py`. Add shared Desk,
