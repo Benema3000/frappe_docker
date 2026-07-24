@@ -907,6 +907,25 @@ Each app ships its own workflows. Common shape:
   Job 1 runs `pre-commit/action@v3.0.0` + `frappe/semgrep-rules`. Job 2 runs
   `pip-audit --desc on .`.
 
+### GitHub authentication inside VS Code
+
+- The remote VS Code session registers a Git credential helper in
+  `/home/frappe/.gitconfig`. Even when `gh` is not installed and GitHub token
+  environment variables are unset, an authenticated process can request the
+  current credential with `git credential fill`, supplying
+  `protocol=https` and `host=github.com` on standard input.
+- Consume the returned `password` only in memory as the GitHub API bearer
+  token. Never print it, persist it, place it in command arguments, or include
+  it in logs/tool output. Prefer a short-lived Node process that obtains the
+  credential and calls the API in the same process.
+- If the helper is unavailable, ask the user to reconnect the VS Code session
+  rather than extracting credentials from VS Code storage.
+- Treat a request to "check CI" as an end-to-end monitoring task, not a
+  one-time status lookup. Poll relevant runs until they complete; inspect and
+  fix failures in owned repositories, verify the fix, retrigger CI, and keep
+  monitoring until it passes or a confirmed external blocker remains. Do not
+  report an in-progress snapshot as the final result.
+
 ### Pre-commit cache and prettier
 
 - **Local vs CI formatting mismatch**: CI installs pre-commit hooks from
